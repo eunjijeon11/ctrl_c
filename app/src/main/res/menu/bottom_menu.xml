@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/alarm"
+        android:enabled="true"
+        android:title="learn"/>
+    <!--android:icon="@drawable/learn" 아이콘 추가해 희수양-->
+
+    <item
+        android:id="@+id/timetable"
+        android:enabled="true"
+        android:title="timetable"/>
+
+    <item
+        android:id="@+id/setting"
+        android:enabled="true"
+        android:title="setting"/>
+
+
+</menu>
