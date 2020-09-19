@@ -26,6 +26,7 @@ import android.widget.NumberPicker;
  * #추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
  * #삭제 버튼을 누르면 해당 아이템을 삭제.
  * 과목명, ID, PW를 담은 SQLite 생성
+ * SQLite 연동
  * 앱을 들어올때마다 SQLite에서 데이터를 가져와서 표시해야함.
  * frag_timetable에서 데이터 반영!
  *******************************************************/
@@ -55,8 +56,6 @@ public class subject_setting extends AppCompatActivity {
         setContentView(R.layout.activity_subject_setting);
 
         //TODO: findviewById 추가하기!
-        recyclerView = findViewById(R.id.recyclerview);
-        btn_add = findViewById(R.id.btn_add);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
