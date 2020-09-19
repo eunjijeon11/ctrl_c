@@ -7,7 +7,15 @@
 
     <Button
         android:id="@+id/btn_change"
-        android:text="수정"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="change"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_delete" />
+
+    <Button
+        android:id="@+id/btn_delete"
+        android:text="delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

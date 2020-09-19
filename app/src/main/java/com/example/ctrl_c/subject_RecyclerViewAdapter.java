@@ -18,6 +18,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
 
     public interface OnItemClickListener {
         void onChangeClick(int position);
+        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -29,8 +30,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         TextView tv_subject;
         TextView tv_ID;
         TextView tv_PW;
-        Button btn_change;
         TextView tv_alarmTime;
+        Button btn_change, btn_delete;
         Boolean useAlarm;
         String ID, PW, alarmTime;
 
@@ -39,8 +40,9 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             tv_subject = itemView.findViewById(R.id.tv_subject);
             tv_ID = itemView.findViewById(R.id.tv_ID);
             tv_PW = itemView.findViewById(R.id.tv_PW);
-            btn_change = itemView.findViewById(R.id.btn_change);
             tv_alarmTime = itemView.findViewById(R.id.tv_alarmTime);
+            btn_change = itemView.findViewById(R.id.btn_change);
+            btn_delete = itemView.findViewById(R.id.btn_delete);
 
             btn_change.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -49,6 +51,18 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onChangeClick(position);
+                        }
+                    }
+                }
+            });
+
+            btn_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
                         }
                     }
                 }
@@ -67,7 +81,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             useAlarm = data.getUseAlarm();
 
             if (!useAlarm) {
-                tv_alarmTime.setVisibility(View.GONE);
+                tv_alarmTime.setVisibility(View.INVISIBLE);
             } else if (useAlarm) {
                 tv_alarmTime.setVisibility(View.VISIBLE);
             }

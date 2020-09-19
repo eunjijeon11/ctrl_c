@@ -20,11 +20,11 @@ import android.widget.NumberPicker;
 /******************************************************
  * ACTIVITY: 과목을 추가하거나 수정할 수 있는 화면
  * TODO
- * 리사이클러뷰로 과목리스트 보여줌
- * 수정 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
- * (원래 값 들어있어야함)
- * 추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
- * 삭제 버튼을 누르면 해당 아이템을 삭제.
+ * #리사이클러뷰로 과목리스트 보여줌
+ * #수정 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
+ * #(원래 값 들어있어야함)
+ * #추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
+ * #삭제 버튼을 누르면 해당 아이템을 삭제.
  * 과목명, ID, PW를 담은 SQLite 생성
  * 앱을 들어올때마다 SQLite에서 데이터를 가져와서 표시해야함.
  * frag_timetable에서 데이터 반영!
@@ -34,6 +34,7 @@ public class subject_setting extends AppCompatActivity {
 
     RecyclerView recyclerView;
     subject_RecyclerViewAdapter recyclerviewAdapter;
+    Button btn_add;
 
     Dialog dialog1;
     EditText et_subject, et_ID, et_PW;
@@ -45,6 +46,9 @@ public class subject_setting extends AppCompatActivity {
     CheckBox cb_alarm;
     LinearLayout linearLayout;
 
+    int ADDITEM = 0;
+    int CHANGEITEM = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +56,14 @@ public class subject_setting extends AppCompatActivity {
 
         //TODO: findviewById 추가하기!
         recyclerView = findViewById(R.id.recyclerview);
+        btn_add = findViewById(R.id.btn_add);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerviewAdapter = new subject_RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerviewAdapter);
 
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<3; i++) {
             addItem("수학", "010 6338 9793", "12345", 5, false);
         }
 
@@ -68,6 +73,20 @@ public class subject_setting extends AppCompatActivity {
             @Override
             public void onChangeClick(int position) {
                 changeSubjectInfo(position);
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                recyclerviewAdapter.items.remove(position);
+                recyclerviewAdapter.notifyDataSetChanged();
+            }
+
+        });
+
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createSubjectInfo();
             }
         });
     }
@@ -95,6 +114,15 @@ public class subject_setting extends AppCompatActivity {
         recyclerviewAdapter.notifyDataSetChanged();
     }
 
+    public void createSubjectInfo() {
+        et_subject.setText("");
+        et_ID.setText("");
+        et_PW.setText("");
+        cb_alarm.setChecked(false);
+        np_alarmTime.setValue(0);
+        runDialog(0, 0);
+    }
+
     public void changeSubjectInfo(final int position) {
         Data recentData = recyclerviewAdapter.items.get(position);
         et_subject.setText(recentData.getSubject());
@@ -102,6 +130,11 @@ public class subject_setting extends AppCompatActivity {
         et_PW.setText(recentData.getPW());
         cb_alarm.setChecked(recentData.getUseAlarm());
         np_alarmTime.setValue(recentData.getAlarmTime());
+
+        runDialog(position, CHANGEITEM);
+    }
+
+    void runDialog(final int position, final int changetype) {
         dialog1.show();
 
         btn_cancel1.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +159,7 @@ public class subject_setting extends AppCompatActivity {
                         if (cb_alarm.isChecked()) {
                             linearLayout.setVisibility(View.VISIBLE);
                         } else {
-                            linearLayout.setVisibility(View.GONE);
+                            linearLayout.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
@@ -144,12 +177,14 @@ public class subject_setting extends AppCompatActivity {
                         Boolean useAlarm = false;
                         if (cb_alarm.isChecked()) useAlarm = true;
                         int alarmTime = np_alarmTime.getValue();
-                        changeItem(position, subject, ID, PW, alarmTime, useAlarm);
-
+                        if (changetype == 0) {
+                            addItem(subject, ID, PW, alarmTime, useAlarm);
+                        } else if (changetype == 1) {
+                            changeItem(position, subject, ID, PW, alarmTime, useAlarm);
+                        }
                         dialog2.dismiss();
                     }
                 });
-
                 dialog1.dismiss();
             }
         });
