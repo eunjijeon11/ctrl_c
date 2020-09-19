@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textView_s"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="과목명"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/et_subject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView_s"
+        app:layout_constraintTop_toTopOf="@+id/textView_s" />
+
+    <TextView
+        android:id="@+id/textView_I"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="줌 주소/URL"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/textView_s"
+        app:layout_constraintTop_toBottomOf="@+id/textView_s" />
+
+    <EditText
+        android:id="@+id/et_ID"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView_I"
+        app:layout_constraintTop_toTopOf="@+id/textView_I" />
+
+    <TextView
+        android:id="@+id/tv_PW"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="비밀번호"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/textView_I"
+        app:layout_constraintTop_toBottomOf="@+id/textView_I" />
+
+    <EditText
+        android:id="@+id/et_PW"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_PW"
+        app:layout_constraintTop_toTopOf="@+id/tv_PW" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_PW">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:text="cancel"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_next"
+            android:text="next"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
