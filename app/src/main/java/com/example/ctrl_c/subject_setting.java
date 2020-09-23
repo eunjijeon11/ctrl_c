@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 /******************************************************
  * ACTIVITY: 과목을 추가하거나 수정할 수 있는 화면
