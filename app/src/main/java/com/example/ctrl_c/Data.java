@@ -2,6 +2,8 @@ package com.example.ctrl_c;
 
 public class Data {
 
+    //subject_recyclerview
+
     private String subject;
     private String ID;
     private String PW;
@@ -46,5 +48,35 @@ public class Data {
 
     public void setUseAlarm(Boolean useAlarm) {
         this.useAlarm = useAlarm;
+    }
+
+    //alarm_recyclerview
+
+    private String alarmName;
+    private boolean[] day;
+    private boolean onOff;
+
+    public String getAlarmName() {
+        return alarmName;
+    }
+
+    public void setAlarmName(String alarmName) {
+        this.alarmName = alarmName;
+    }
+
+    public boolean[] getDay() {
+        return day;
+    }
+
+    public void setDk(boolean[] day) {
+        this.day = day;
+    }
+
+    public boolean getOnOff() {
+        return onOff;
+    }
+
+    public void setOnOff(boolean onOff) {
+        this.onOff = onOff;
     }
 }
