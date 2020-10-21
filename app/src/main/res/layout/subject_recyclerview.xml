@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="change"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_delete" />
 
@@ -32,8 +33,9 @@
 
         <TextView
             android:id="@+id/tv_subject"
+            android:fontFamily="@font/hanna"
             android:text="수학"
-            android:textSize="40sp"
+            android:textSize="70sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

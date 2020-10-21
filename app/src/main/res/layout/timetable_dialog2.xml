@@ -8,6 +8,7 @@
 
     <CheckBox
         android:id="@+id/cb_alarm"
+        android:fontFamily="@font/nanumbarungothic"
         android:text="알람기능을 사용합니다"
         android:checked="false"
         android:layout_width="wrap_content"
@@ -35,9 +36,10 @@
             android:layout_marginRight="5dp" />
 
         <TextView
-            android:text="분 전에 알림"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nanumbarungothic"
+            android:text="분 전에 알림" />
 
     </LinearLayout>
 
