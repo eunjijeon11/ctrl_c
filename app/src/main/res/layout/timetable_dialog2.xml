@@ -2,12 +2,13 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="30dp">
+    app:cardCornerRadius="30dp"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
@@ -44,10 +45,11 @@
                 android:layout_marginRight="5dp" />
 
             <TextView
-                android:layout_width="84dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nanumbarungothic"
-                android:text="분 전에 알림" />
+                android:text="분 전에 알림"
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
@@ -60,8 +62,8 @@
             <Button
                 android:id="@+id/btn_cancel2"
                 android:text="cancel"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@android:color/holo_red_light"
-                android:background="FF000000"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
@@ -69,7 +71,7 @@
             <Button
                 android:id="@+id/btn_ok"
                 android:text="ok"
-                android:background="FF000000"
+                style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>

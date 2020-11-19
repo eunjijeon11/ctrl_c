@@ -1,5 +1,7 @@
 package com.example.ctrl_c;
 
+import android.graphics.Color;
+
 public class Data {
 
     //subject_recyclerview
@@ -9,6 +11,7 @@ public class Data {
     private String PW;
     private int alarmTime;
     private Boolean useAlarm;
+    private String color;
 
     public  String getSubject() {
         return subject;
@@ -48,6 +51,14 @@ public class Data {
 
     public void setUseAlarm(Boolean useAlarm) {
         this.useAlarm = useAlarm;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     //alarm_recyclerview

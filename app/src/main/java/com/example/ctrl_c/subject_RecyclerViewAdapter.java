@@ -1,5 +1,6 @@
 package com.example.ctrl_c;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_RecyclerViewAdapter.ViewHolder> {
@@ -34,7 +36,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         TextView tv_alarmBefore;
         ImageButton btn_copy, btn_delete;
         Boolean useAlarm;
-        String ID, PW, alarmBefore;
+        String ID, PW, alarmBefore, color;
+        CardView cv_background;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -44,6 +47,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             tv_alarmBefore = itemView.findViewById(R.id.tv_alarmBefore);
             btn_copy = itemView.findViewById(R.id.btn_copy);
             btn_delete = itemView.findViewById(R.id.btn_delete);
+            cv_background = itemView.findViewById(R.id.cv_subject);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,10 +87,12 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         }
 
         void onbind(Data data) {
-            alarmBefore = data.getAlarmTime() + "Min";
+            alarmBefore = data.getAlarmTime() + "분 전에 알림";
             ID = "ID: " + data.getID();
             PW = "PW: " + data.getPW();
+            color = data.getColor();
 
+            cv_background.setCardBackgroundColor(Color.parseColor(color));
             tv_subject.setText(data.getSubject());
             tv_ID.setText(ID);
             tv_PW.setText(PW);
