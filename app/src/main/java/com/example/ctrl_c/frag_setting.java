@@ -21,7 +21,7 @@ public class frag_setting extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-
+        btn_subject = view.findViewById(R.id.btn_setting);
 
         btn_subject.setOnClickListener(new View.OnClickListener() {
             @Override

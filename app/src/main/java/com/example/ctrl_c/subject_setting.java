@@ -1,6 +1,7 @@
 package com.example.ctrl_c;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +38,7 @@ public class subject_setting extends AppCompatActivity {
 
     RecyclerView recyclerView;
     subject_RecyclerViewAdapter recyclerviewAdapter;
-    Button btn_add;
+    CardView cv_add;
 
     Dialog dialog1;
     EditText et_subject, et_ID, et_PW;
@@ -57,7 +58,8 @@ public class subject_setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_setting);
 
-        //TODO: findviewById 추가하기!
+        recyclerView = findViewById(R.id.rv_subject);
+        cv_add = findViewById(R.id.cv_add);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -72,6 +74,11 @@ public class subject_setting extends AppCompatActivity {
 
         recyclerviewAdapter.setOnItemClickListener(new subject_RecyclerViewAdapter.OnItemClickListener() {
             @Override
+            public void onCopyClick(int position) {
+                //id, pw 복붙
+            }
+
+            @Override
             public void onChangeClick(int position) {
                 changeSubjectInfo(position);
             }
@@ -84,7 +91,7 @@ public class subject_setting extends AppCompatActivity {
 
         });
 
-        btn_add.setOnClickListener(new View.OnClickListener() {
+        cv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createSubjectInfo();
@@ -121,7 +128,7 @@ public class subject_setting extends AppCompatActivity {
         et_PW.setText("");
         cb_alarm.setChecked(false);
         np_alarmTime.setValue(0);
-        runDialog(0, 0);
+        runDialog(recyclerviewAdapter.items.size(), ADDITEM);
     }
 
     public void changeSubjectInfo(final int position) {
@@ -175,7 +182,7 @@ public class subject_setting extends AppCompatActivity {
                 btn_ok.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Boolean useAlarm = false;
+                        boolean useAlarm = false;
                         if (cb_alarm.isChecked()) useAlarm = true;
                         int alarmTime = np_alarmTime.getValue();
                         if (changetype == 0) {

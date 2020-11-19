@@ -1,94 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
-
-    <TextView
-        android:id="@+id/textView_s"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/nanumbarungothic"
-        android:text="과목명"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/et_subject"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView_s"
-        app:layout_constraintTop_toTopOf="@+id/textView_s" />
-
-    <TextView
-        android:id="@+id/textView_I"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/nanumbarungothic"
-        android:text="줌 주소/URL"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="@+id/textView_s"
-        app:layout_constraintTop_toBottomOf="@+id/textView_s" />
-
-    <EditText
-        android:id="@+id/et_ID"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView_I"
-        app:layout_constraintTop_toTopOf="@+id/textView_I" />
-
-    <TextView
-        android:id="@+id/tv_PW"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/nanumbarungothic"
-        android:text="비밀번호"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="@+id/textView_I"
-        app:layout_constraintTop_toBottomOf="@+id/textView_I" />
-
-    <EditText
-        android:id="@+id/et_PW"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_PW"
-        app:layout_constraintTop_toTopOf="@+id/tv_PW" />
+    app:cardCornerRadius="30dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_PW">
+        android:padding="20dp"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:text="cancel"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textSize="30dp"
+            android:text="add subject"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/et_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="과목명:" />
+
+        <EditText
+            android:id="@+id/et_ID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ID/URL:" />
+
+        <EditText
+            android:id="@+id/et_PW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="비밀번호:"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_PW">
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:text="cancel"
+                android:background="FF000000"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btn_next"
+                android:text="next"
+                android:background="FF000000"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1" />
+        </LinearLayout>
 
 
-        <Button
-            android:id="@+id/btn_next"
-            android:text="next"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1" />
 
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
