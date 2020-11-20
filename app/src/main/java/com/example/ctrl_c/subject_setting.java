@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -36,15 +37,17 @@ import java.util.ArrayList;
  * #추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
  * #삭제 버튼을 누르면 해당 아이템을 삭제.
  * #컬러픽커로 배경색 커스텀 기능 만듦
- * 과목명, ID, PW를 담은 SQLite 생성
- * SQLite 연동
- * 앱을 들어올때마다 SQLite에서 데이터를 가져와서 표시해야함.
+ * #과목명, ID, PW, color, alarmbefore, useAlarm를 담은 SQLite 생성
+ * #SQLite 연동
+ * #앱을 들어올때마다 SQLite에서 데이터를 가져와서 표시해야함.
  * frag_timetable에서 데이터 반영!
  *******************************************************/
 
 public class subject_setting extends AppCompatActivity {
 
-    //TODO: SQLite Database 연동
+    DBOpenHelper dbOpenHelper;
+    static String SUBJECT = "subject";
+
     RecyclerView recyclerView;
     subject_RecyclerViewAdapter recyclerviewAdapter;
     CardView cv_add;
@@ -76,9 +79,28 @@ public class subject_setting extends AppCompatActivity {
         recyclerviewAdapter = new subject_RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerviewAdapter);
 
-        for (int i=0; i<3; i++) {
-            addItem("수학", "010 6338 9793", "12345", "#FFDF9F", 5, true);
+        //readDB
+        dbOpenHelper = new DBOpenHelper(this);
+        dbOpenHelper.open(SUBJECT);
+
+        Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
+        while (cursor.moveToNext()) {
+            Data data = new Data();
+            String tempSubjectName = cursor.getString(cursor.getColumnIndex("subjectName"));
+            String tempID = cursor.getString(cursor.getColumnIndex("id"));
+            String tempPW = cursor.getString(cursor.getColumnIndex("password"));
+            String tempColor = cursor.getString(cursor.getColumnIndex("color"));
+            String tempAlarmTime = cursor.getString(cursor.getColumnIndex("alarm_before"));
+            boolean tempUseAlarm = (cursor.getInt(cursor.getColumnIndex("useAlarm")) != 0);
+            data.setSubject(tempSubjectName);
+            data.setID(tempID);
+            data.setPW(tempPW);
+            data.setColor(tempColor);
+            data.setAlarmBefore(Integer.valueOf(tempAlarmTime));
+            data.setUseAlarm(tempUseAlarm);
+            recyclerviewAdapter.addItem(data);
         }
+        recyclerviewAdapter.notifyDataSetChanged();
 
         setDialog();
 
@@ -100,6 +122,7 @@ public class subject_setting extends AppCompatActivity {
             public void onDeleteClick(int position) {
                 recyclerviewAdapter.items.remove(position);
                 recyclerviewAdapter.notifyDataSetChanged();
+                dbOpenHelper.deleteColumn(position, SUBJECT);
             }
 
         });
@@ -118,23 +141,26 @@ public class subject_setting extends AppCompatActivity {
         data.setID(ID);
         data.setPW(PW);
         data.setColor(color);
-        data.setAlarmTime(alarmTime);
+        data.setAlarmBefore(alarmTime);
         data.setUseAlarm(useAlarm);
         recyclerviewAdapter.addItem(data);
         recyclerviewAdapter.notifyDataSetChanged();
+        boolean temp = dbOpenHelper.insertColumn(SUBJECT, data);
+        Log.e("isInsert", Boolean.toString(temp));
     }
 
-    public void changeItem(int position, String subject, String ID, String PW, String color,int alarmTime, Boolean useAlarm) {
+    public void changeItem(int position, String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
         recyclerviewAdapter.items.remove(position);
         Data data = new Data();
         data.setSubject(subject);
         data.setID(ID);
         data.setPW(PW);
         data.setColor(color);
-        data.setAlarmTime(alarmTime);
+        data.setAlarmBefore(alarmTime);
         data.setUseAlarm(useAlarm);
         recyclerviewAdapter.items.add(position, data);
         recyclerviewAdapter.notifyDataSetChanged();
+        dbOpenHelper.updateColumn(position, SUBJECT, data);
     }
 
     public void createSubjectInfo() {
@@ -156,7 +182,7 @@ public class subject_setting extends AppCompatActivity {
         tempColor = recentData.getColor();
         btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
         cb_alarm.setChecked(recentData.getUseAlarm());
-        np_alarmTime.setValue(recentData.getAlarmTime());
+        np_alarmTime.setValue(recentData.getAlarmBefore());
 
         runDialog(position, CHANGEITEM);
     }
@@ -210,9 +236,9 @@ public class subject_setting extends AppCompatActivity {
                         boolean useAlarm = false;
                         if (cb_alarm.isChecked()) useAlarm = true;
                         int alarmTime = np_alarmTime.getValue();
-                        if (changetype == 0) {
+                        if (changetype == ADDITEM) {
                             addItem(subject, ID, PW, tempColor,alarmTime, useAlarm);
-                        } else if (changetype == 1) {
+                        } else if (changetype == CHANGEITEM) {
                             changeItem(position, subject, ID, PW, tempColor,alarmTime, useAlarm);
                         }
                         dialog2.dismiss();
@@ -284,5 +310,11 @@ public class subject_setting extends AppCompatActivity {
 
                     }
                 }).show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dbOpenHelper.close(SUBJECT);
     }
 }

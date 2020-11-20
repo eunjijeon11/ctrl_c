@@ -21,10 +21,17 @@ public class MainActivity extends AppCompatActivity {
     frag_timetable frag_timetable;
     frag_setting frag_setting;
 
+    static String SUBJECT = "subject";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DBOpenHelper mdbOpenHelper = new DBOpenHelper(this);
+        mdbOpenHelper.open(SUBJECT);
+        mdbOpenHelper.create(SUBJECT);
+        mdbOpenHelper.close(SUBJECT);
 
         bottomNavigationView = findViewById(R.id.bottom);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

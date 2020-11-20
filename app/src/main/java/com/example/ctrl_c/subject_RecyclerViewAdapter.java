@@ -87,7 +87,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         }
 
         void onbind(Data data) {
-            alarmBefore = data.getAlarmTime() + "분 전에 알림";
+            alarmBefore = data.getAlarmBefore() + "분 전에 알림";
             ID = "ID: " + data.getID();
             PW = "PW: " + data.getPW();
             color = data.getColor();
@@ -100,7 +100,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             useAlarm = data.getUseAlarm();
 
             if (!useAlarm) {
-                tv_alarmBefore.setVisibility(View.INVISIBLE);
+                tv_alarmBefore.setVisibility(View.GONE);
             } else if (useAlarm) {
                 tv_alarmBefore.setVisibility(View.VISIBLE);
             }

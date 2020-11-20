@@ -1,7 +1,5 @@
 package com.example.ctrl_c;
 
-import android.graphics.Color;
-
 public class Data {
 
     //subject_recyclerview
@@ -9,7 +7,7 @@ public class Data {
     private String subject;
     private String ID;
     private String PW;
-    private int alarmTime;
+    private int alarmBefore;
     private Boolean useAlarm;
     private String color;
 
@@ -37,12 +35,12 @@ public class Data {
         this.PW = M;
     }
 
-    public int getAlarmTime() {
-        return alarmTime;
+    public int getAlarmBefore() {
+        return alarmBefore;
     }
 
-    public void setAlarmTime(int alarmTime) {
-        this.alarmTime = alarmTime;
+    public void setAlarmBefore(int alarmBefore) {
+        this.alarmBefore = alarmBefore;
     }
 
     public Boolean getUseAlarm() {

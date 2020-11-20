@@ -1,6 +1,5 @@
 package com.example.ctrl_c;
 
-import android.app.Presentation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -42,7 +41,7 @@ public class DBOpenHelper {
     private static class SubjectDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "SubjectDataBase.db";
-        private static final int DB_Version = 1;
+        private static final int DB_Version = 2;
 
         public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -91,39 +90,42 @@ public class DBOpenHelper {
         }
     }
 
-    public boolean insertColumn(String DBName, String[] data) {
+    public boolean insertColumn(String DBName, Data data) {
         ContentValues values = new ContentValues();
         boolean isInsert = false;
         if (DBName.equals("alarm")) {
-            values.put(DataBases.CreateAlarmDB.ALARM_NAME, data[0]);
-            values.put(DataBases.CreateAlarmDB.HOUR, data[1]);
-            values.put(DataBases.CreateAlarmDB.MIN, data[2]);
+            //
             isInsert = aDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;
         } else if (DBName.equals("subject")) {
-            values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, data[0]);
-            values.put(DataBases.CreateAlarmDB.HOUR, data[1]);
-            values.put(DataBases.CreateAlarmDB.MIN, data[2]);
-            isInsert = sDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;
+            values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, data.getSubject());
+            values.put(DataBases.CreateSubjectDB.ID, data.getID());
+            values.put(DataBases.CreateSubjectDB.PASSWORD, data.getPW());
+            values.put(DataBases.CreateSubjectDB.COLOR, data.getColor());
+            int useAlarm = data.getUseAlarm() ? 1 : 0;
+            values.put(DataBases.CreateSubjectDB.USE_ALARM, useAlarm);
+            values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, data.getAlarmBefore());
+            isInsert = sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
         }
         return isInsert;
     }
 
-    public boolean updateColumn(long id, String DBName, String[] data) {
+    public boolean updateColumn(long id, String DBName, Data data) {
         ContentValues values = new ContentValues();
         boolean isUpdate = false;
         if (DBName.equals("alarm")) {
-            values.put(DataBases.CreateAlarmDB.ALARM_NAME, data[0]);
-            values.put(DataBases.CreateAlarmDB.HOUR, data[1]);
-            values.put(DataBases.CreateAlarmDB.MIN, data[2]);
+            //
             isUpdate = aDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, "_id=" + id, null) > 0;
         } else if (DBName.equals("subject")) {
-            values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, data[0]);
-            values.put(DataBases.CreateAlarmDB.HOUR, data[1]);
-            values.put(DataBases.CreateAlarmDB.MIN, data[2]);
-            isUpdate = sDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, "_id=" + id, null) > 0;
+            values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, data.getSubject());
+            values.put(DataBases.CreateSubjectDB.ID, data.getID());
+            values.put(DataBases.CreateSubjectDB.PASSWORD, data.getPW());
+            values.put(DataBases.CreateSubjectDB.COLOR, data.getColor());
+            values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, data.getAlarmBefore());
+            isUpdate = sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, "_id=" + id, null) > 0;
         }
         return isUpdate;
     }
+
     public boolean deleteColumn(long id, String DBName) {
         boolean isDelete = false;
         if (DBName.equals("alarm")) {
