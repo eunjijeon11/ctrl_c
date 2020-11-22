@@ -25,6 +25,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -47,17 +48,21 @@ public class subject_setting extends AppCompatActivity {
 
     DBOpenHelper dbOpenHelper;
     static String SUBJECT = "subject";
+    ArrayList<String> arrayIndex = new ArrayList<>();
+    Long nowIndex;
 
     RecyclerView recyclerView;
     subject_RecyclerViewAdapter recyclerviewAdapter;
     CardView cv_add;
 
     Dialog dialog1;
+    TextView tv_dialogType1;
     EditText et_subject, et_ID, et_PW;
     Button btn_cancel1, btn_next, btn_colorPicker;
     String tempColor = "#FFFFFF";
 
     Dialog dialog2;
+    TextView tv_dialogType2;
     NumberPicker np_alarmTime;
     Button btn_cancel2, btn_ok;
     CheckBox cb_alarm;
@@ -74,7 +79,12 @@ public class subject_setting extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv_subject);
         cv_add = findViewById(R.id.cv_add);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerviewAdapter = new subject_RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerviewAdapter);
@@ -82,10 +92,12 @@ public class subject_setting extends AppCompatActivity {
         //readDB
         dbOpenHelper = new DBOpenHelper(this);
         dbOpenHelper.open(SUBJECT);
+        arrayIndex.clear();
 
         Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
         while (cursor.moveToNext()) {
             Data data = new Data();
+            String tempIndex = cursor.getString(cursor.getColumnIndex("_id"));
             String tempSubjectName = cursor.getString(cursor.getColumnIndex("subjectName"));
             String tempID = cursor.getString(cursor.getColumnIndex("id"));
             String tempPW = cursor.getString(cursor.getColumnIndex("password"));
@@ -99,8 +111,11 @@ public class subject_setting extends AppCompatActivity {
             data.setAlarmBefore(Integer.valueOf(tempAlarmTime));
             data.setUseAlarm(tempUseAlarm);
             recyclerviewAdapter.addItem(data);
+            arrayIndex.add(tempIndex);
         }
-        recyclerviewAdapter.notifyDataSetChanged();
+        Log.e("item size", Integer.toString(cursor.getCount()));
+        Log.e("rv size", Integer.toString(recyclerviewAdapter.getItemCount()));
+        cursor.close();
 
         setDialog();
 
@@ -115,14 +130,26 @@ public class subject_setting extends AppCompatActivity {
 
             @Override
             public void onChangeClick(int position) {
-                changeSubjectInfo(position);
+                Data recentData = recyclerviewAdapter.items.get(position);
+                et_subject.setText(recentData.getSubject());
+                et_ID.setText(recentData.getID());
+                et_PW.setText(recentData.getPW());
+                tempColor = recentData.getColor();
+                btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
+                cb_alarm.setChecked(recentData.getUseAlarm());
+                np_alarmTime.setValue(recentData.getAlarmBefore());
+
+                runDialog(position, CHANGEITEM);
             }
 
             @Override
             public void onDeleteClick(int position) {
                 recyclerviewAdapter.items.remove(position);
                 recyclerviewAdapter.notifyDataSetChanged();
-                dbOpenHelper.deleteColumn(position, SUBJECT);
+                nowIndex = Long.parseLong(arrayIndex.get(position));
+                boolean temp = dbOpenHelper.deleteColumn(nowIndex, SUBJECT);
+                Log.e("isDeleted", Boolean.toString(temp));
+                freshArray();
             }
 
         });
@@ -130,9 +157,36 @@ public class subject_setting extends AppCompatActivity {
         cv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createSubjectInfo();
+                tempColor = "#FFFFFF";
+                et_subject.setText("");
+                et_ID.setText("");
+                et_PW.setText("");
+                btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
+                cb_alarm.setChecked(false);
+                np_alarmTime.setValue(0);
+                runDialog(recyclerviewAdapter.items.size(), ADDITEM);
             }
         });
+        cv_add.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                dbOpenHelper.deleteAllColumns(SUBJECT);
+                recyclerviewAdapter.items.clear();
+                recyclerviewAdapter.notifyDataSetChanged();
+                freshArray();
+                return true;
+            }
+        });
+    }
+
+    void freshArray() {
+        arrayIndex.clear();
+        Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
+        while (cursor.moveToNext()) {
+            String tempIndex = cursor.getString(cursor.getColumnIndex("_id"));
+            arrayIndex.add(tempIndex);
+        }
+        cursor.close();
     }
 
     public void addItem(String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
@@ -143,10 +197,12 @@ public class subject_setting extends AppCompatActivity {
         data.setColor(color);
         data.setAlarmBefore(alarmTime);
         data.setUseAlarm(useAlarm);
-        recyclerviewAdapter.addItem(data);
+        boolean isAdded = recyclerviewAdapter.addItem(data);
         recyclerviewAdapter.notifyDataSetChanged();
         boolean temp = dbOpenHelper.insertColumn(SUBJECT, data);
         Log.e("isInsert", Boolean.toString(temp));
+        Log.e("addItem", Boolean.toString(isAdded));
+        freshArray();
     }
 
     public void changeItem(int position, String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
@@ -160,36 +216,22 @@ public class subject_setting extends AppCompatActivity {
         data.setUseAlarm(useAlarm);
         recyclerviewAdapter.items.add(position, data);
         recyclerviewAdapter.notifyDataSetChanged();
-        dbOpenHelper.updateColumn(position, SUBJECT, data);
-    }
-
-    public void createSubjectInfo() {
-        tempColor = "#FFFFFF";
-        et_subject.setText("");
-        et_ID.setText("");
-        et_PW.setText("");
-        btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
-        cb_alarm.setChecked(false);
-        np_alarmTime.setValue(0);
-        runDialog(recyclerviewAdapter.items.size(), ADDITEM);
-    }
-
-    public void changeSubjectInfo(final int position) {
-        Data recentData = recyclerviewAdapter.items.get(position);
-        et_subject.setText(recentData.getSubject());
-        et_ID.setText(recentData.getID());
-        et_PW.setText(recentData.getPW());
-        tempColor = recentData.getColor();
-        btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
-        cb_alarm.setChecked(recentData.getUseAlarm());
-        np_alarmTime.setValue(recentData.getAlarmBefore());
-
-        runDialog(position, CHANGEITEM);
+        nowIndex = Long.parseLong(arrayIndex.get(position));
+        boolean temp = dbOpenHelper.updateColumn(nowIndex, SUBJECT, data);
+        Log.e("isChanged", Boolean.toString(temp));
+        freshArray();
     }
 
     void runDialog(final int position, final int changetype) {
         dialog1.show();
 
+        if (changetype == ADDITEM) {
+            tv_dialogType1.setText("add subject");
+            tv_dialogType2.setText("add subject");
+        } else if (changetype == CHANGEITEM) {
+            tv_dialogType1.setText("change subject");
+            tv_dialogType2.setText("change subject");
+        }
         btn_colorPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,6 +302,7 @@ public class subject_setting extends AppCompatActivity {
         dialog2.setOwnerActivity(subject_setting.this);
         dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        tv_dialogType1 = dialog1.findViewById(R.id.tv_dialogType1);
         et_subject = dialog1.findViewById(R.id.et_subject);
         et_ID = dialog1.findViewById(R.id.et_ID);
         et_PW = dialog1.findViewById(R.id.et_PW);
@@ -267,6 +310,7 @@ public class subject_setting extends AppCompatActivity {
         btn_cancel1 = dialog1.findViewById(R.id.btn_cancel);
         btn_next = dialog1.findViewById(R.id.btn_next);
 
+        tv_dialogType2 = dialog2.findViewById(R.id.tv_dialogType2);
         cb_alarm = dialog2.findViewById(R.id.cb_alarm);
         np_alarmTime = dialog2.findViewById(R.id.np_alarmTime);
         btn_cancel2 = dialog2.findViewById(R.id.btn_cancel2);
@@ -316,5 +360,11 @@ public class subject_setting extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         dbOpenHelper.close(SUBJECT);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        dbOpenHelper.open(SUBJECT);
     }
 }

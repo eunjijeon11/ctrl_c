@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -41,7 +42,7 @@ public class DBOpenHelper {
     private static class SubjectDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "SubjectDataBase.db";
-        private static final int DB_Version = 2;
+        private static final int DB_Version = 4;
 
         public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -132,6 +133,8 @@ public class DBOpenHelper {
             isDelete = aDB.delete(DataBases.CreateAlarmDB.TABLE_NAME, "_id=" + id, null) > 0;
         } else if (DBName.equals("subject")) {
             isDelete = sDB.delete(DataBases.CreateSubjectDB.TABLE_NAME, "_id=" + id, null) > 0;
+            Log.e("deleteColumn", "triggered");
+            Log.e("id", Long.toString(id));
         }
         return isDelete;
     }
@@ -146,4 +149,12 @@ public class DBOpenHelper {
         return cursor;
     }
 
+    public void deleteAllColumns(String DBName) {
+        if (DBName.equals("alarm")) {
+            aDB.delete(DataBases.CreateAlarmDB.TABLE_NAME, null, null);
+        } else if (DBName.equals("subject")){
+            sDB.delete(DataBases.CreateSubjectDB.TABLE_NAME, null, null);
+        }
+
+    }
 }

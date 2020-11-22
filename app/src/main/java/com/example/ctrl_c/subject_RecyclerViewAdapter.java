@@ -100,7 +100,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             useAlarm = data.getUseAlarm();
 
             if (!useAlarm) {
-                tv_alarmBefore.setVisibility(View.GONE);
+                tv_alarmBefore.setVisibility(View.INVISIBLE);
             } else if (useAlarm) {
                 tv_alarmBefore.setVisibility(View.VISIBLE);
             }
@@ -124,7 +124,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         return items.size();
     }
 
-    void addItem(Data data) {
+    public boolean addItem(Data data) {
         items.add(data);
+        return true;
     }
 }
