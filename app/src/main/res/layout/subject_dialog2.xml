@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:text="add subject"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textColor="@android:color/black"/>
 
         <CheckBox
@@ -62,7 +62,7 @@
 
             <Button
                 android:id="@+id/btn_cancel2"
-                android:text="cancel"
+                android:text="previous"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@android:color/holo_red_light"
                 android:layout_width="0dp"

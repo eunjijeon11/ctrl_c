@@ -12,13 +12,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -36,7 +32,8 @@ import java.util.ArrayList;
  * #수정 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
  * #(원래 값 들어있어야함)
  * #추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
- * #삭제 버튼을 누르면 해당 아이템을 삭제.
+ * #삭제 버튼을 누르면 정말로 삭제할거냐 묻는 다이얼로그 띄움.
+ * #예를 누르면 해당 아이템을 삭제.
  * #컬러픽커로 배경색 커스텀 기능 만듦
  * #과목명, ID, PW, color, alarmbefore, useAlarm를 담은 SQLite 생성
  * #SQLite 연동
@@ -68,6 +65,9 @@ public class subject_setting extends AppCompatActivity {
     CheckBox cb_alarm;
     LinearLayout linearLayout;
 
+    Dialog dl_delete;
+    Button btn_cancel_delete, btn_ok_delete;
+
     int ADDITEM = 0;
     int CHANGEITEM = 1;
 
@@ -79,12 +79,7 @@ public class subject_setting extends AppCompatActivity {
         recyclerView = findViewById(R.id.rv_subject);
         cv_add = findViewById(R.id.cv_add);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerviewAdapter = new subject_RecyclerViewAdapter();
         recyclerView.setAdapter(recyclerviewAdapter);
@@ -108,13 +103,11 @@ public class subject_setting extends AppCompatActivity {
             data.setID(tempID);
             data.setPW(tempPW);
             data.setColor(tempColor);
-            data.setAlarmBefore(Integer.valueOf(tempAlarmTime));
+            data.setAlarmBefore(Integer.parseInt(tempAlarmTime));
             data.setUseAlarm(tempUseAlarm);
             recyclerviewAdapter.addItem(data);
             arrayIndex.add(tempIndex);
         }
-        Log.e("item size", Integer.toString(cursor.getCount()));
-        Log.e("rv size", Integer.toString(recyclerviewAdapter.getItemCount()));
         cursor.close();
 
         setDialog();
@@ -137,21 +130,38 @@ public class subject_setting extends AppCompatActivity {
                 tempColor = recentData.getColor();
                 btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
                 cb_alarm.setChecked(recentData.getUseAlarm());
+                if (recentData.getUseAlarm()) {
+                    linearLayout.setVisibility(View.VISIBLE);
+                } else {
+                    linearLayout.setVisibility(View.INVISIBLE);
+                }
                 np_alarmTime.setValue(recentData.getAlarmBefore());
 
                 runDialog(position, CHANGEITEM);
             }
 
             @Override
-            public void onDeleteClick(int position) {
-                recyclerviewAdapter.items.remove(position);
-                recyclerviewAdapter.notifyDataSetChanged();
-                nowIndex = Long.parseLong(arrayIndex.get(position));
-                boolean temp = dbOpenHelper.deleteColumn(nowIndex, SUBJECT);
-                Log.e("isDeleted", Boolean.toString(temp));
-                freshArray();
-            }
+            public void onDeleteClick(final int position) {
+                dl_delete.show();
 
+                btn_cancel_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dl_delete.dismiss();
+                    }
+                });
+                btn_ok_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        recyclerviewAdapter.items.remove(position);
+                        recyclerviewAdapter.notifyDataSetChanged();
+                        nowIndex = Long.parseLong(arrayIndex.get(position));
+                        dbOpenHelper.deleteColumn(nowIndex, SUBJECT);
+                        freshArray();
+                        dl_delete.dismiss();
+                    }
+                });
+            }
         });
 
         cv_add.setOnClickListener(new View.OnClickListener() {
@@ -197,11 +207,9 @@ public class subject_setting extends AppCompatActivity {
         data.setColor(color);
         data.setAlarmBefore(alarmTime);
         data.setUseAlarm(useAlarm);
-        boolean isAdded = recyclerviewAdapter.addItem(data);
+        recyclerviewAdapter.addItem(data);
         recyclerviewAdapter.notifyDataSetChanged();
-        boolean temp = dbOpenHelper.insertColumn(SUBJECT, data);
-        Log.e("isInsert", Boolean.toString(temp));
-        Log.e("addItem", Boolean.toString(isAdded));
+        dbOpenHelper.insertColumn(SUBJECT, data);
         freshArray();
     }
 
@@ -217,18 +225,17 @@ public class subject_setting extends AppCompatActivity {
         recyclerviewAdapter.items.add(position, data);
         recyclerviewAdapter.notifyDataSetChanged();
         nowIndex = Long.parseLong(arrayIndex.get(position));
-        boolean temp = dbOpenHelper.updateColumn(nowIndex, SUBJECT, data);
-        Log.e("isChanged", Boolean.toString(temp));
+        dbOpenHelper.updateColumn(nowIndex, SUBJECT, data);
         freshArray();
     }
 
-    void runDialog(final int position, final int changetype) {
+    void runDialog(final int position, final int changeType) {
         dialog1.show();
 
-        if (changetype == ADDITEM) {
+        if (changeType == ADDITEM) {
             tv_dialogType1.setText("add subject");
             tv_dialogType2.setText("add subject");
-        } else if (changetype == CHANGEITEM) {
+        } else if (changeType == CHANGEITEM) {
             tv_dialogType1.setText("change subject");
             tv_dialogType2.setText("change subject");
         }
@@ -278,29 +285,35 @@ public class subject_setting extends AppCompatActivity {
                         boolean useAlarm = false;
                         if (cb_alarm.isChecked()) useAlarm = true;
                         int alarmTime = np_alarmTime.getValue();
-                        if (changetype == ADDITEM) {
+                        if (changeType == ADDITEM) {
                             addItem(subject, ID, PW, tempColor,alarmTime, useAlarm);
-                        } else if (changetype == CHANGEITEM) {
+                        } else if (changeType == CHANGEITEM) {
                             changeItem(position, subject, ID, PW, tempColor,alarmTime, useAlarm);
                         }
                         dialog2.dismiss();
+                        dialog1.dismiss();
                     }
                 });
-                dialog1.dismiss();
+
             }
         });
     }
 
     void setDialog() {
         dialog1 = new Dialog(this);
-        dialog1.setContentView(R.layout.timetable_dialog1);
+        dialog1.setContentView(R.layout.subject_dialog1);
         dialog1.setOwnerActivity(subject_setting.this);
         dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         dialog2 = new Dialog(this);
-        dialog2.setContentView(R.layout.timetable_dialog2);
+        dialog2.setContentView(R.layout.subject_dialog2);
         dialog2.setOwnerActivity(subject_setting.this);
         dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dl_delete = new Dialog(this);
+        dl_delete.setContentView(R.layout.subject_delete_dialog);
+        dl_delete.setOwnerActivity(subject_setting.this);
+        dl_delete.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         tv_dialogType1 = dialog1.findViewById(R.id.tv_dialogType1);
         et_subject = dialog1.findViewById(R.id.et_subject);
@@ -318,6 +331,9 @@ public class subject_setting extends AppCompatActivity {
         linearLayout = dialog2.findViewById(R.id.linearLDialog);
         np_alarmTime.setMinValue(0);
         np_alarmTime.setMaxValue(20);
+
+        btn_cancel_delete = dl_delete.findViewById(R.id.btn_cancel_delete);
+        btn_ok_delete = dl_delete.findViewById(R.id.btn_ok_delete);
     }
 
     void openColorPicker() {
