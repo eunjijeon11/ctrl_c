@@ -61,6 +61,7 @@
                 android:id="@+id/tv_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="5dp"
                 android:fontFamily="@font/hanna"
                 android:text="수학"
                 android:textSize="25sp"

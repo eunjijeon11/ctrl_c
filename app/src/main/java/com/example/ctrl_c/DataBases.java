@@ -33,4 +33,24 @@ public class DataBases {
                 + USE_ALARM + " integer not null , "
                 + ALARM_BEFORE + " integer not null );";
     }
+
+    public static final class CreateTimetableDB implements BaseColumns {
+        public static final String TABLE_NAME = "timetableDB";
+        public static final String MON = "mon";
+        public static final String TUE = "tue";
+        public static final String WED = "wed";
+        public static final String THU = "thu";
+        public static final String FRI = "fri";
+        public static final String SAT = "sat";
+        public static final String SUN = "sun";
+        public static final String CREATE = "create table if not exists " + TABLE_NAME +
+                "(" + _ID + " integer primary key autoincrement, "
+                + MON + " text not null , "
+                + TUE + " text not null , "
+                + WED + " text not null , "
+                + THU + " text not null , "
+                + FRI + " text not null , "
+                + SAT + " text not null , "
+                + SUN + " text not null );";
+    }
 }

@@ -91,7 +91,7 @@ public class subject_setting extends AppCompatActivity {
 
         Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
         while (cursor.moveToNext()) {
-            Data data = new Data();
+            SubjectData subjectData = new SubjectData();
             String tempIndex = cursor.getString(cursor.getColumnIndex("_id"));
             String tempSubjectName = cursor.getString(cursor.getColumnIndex("subjectName"));
             String tempID = cursor.getString(cursor.getColumnIndex("id"));
@@ -99,13 +99,13 @@ public class subject_setting extends AppCompatActivity {
             String tempColor = cursor.getString(cursor.getColumnIndex("color"));
             String tempAlarmTime = cursor.getString(cursor.getColumnIndex("alarm_before"));
             boolean tempUseAlarm = (cursor.getInt(cursor.getColumnIndex("useAlarm")) != 0);
-            data.setSubject(tempSubjectName);
-            data.setID(tempID);
-            data.setPW(tempPW);
-            data.setColor(tempColor);
-            data.setAlarmBefore(Integer.parseInt(tempAlarmTime));
-            data.setUseAlarm(tempUseAlarm);
-            recyclerviewAdapter.addItem(data);
+            subjectData.setSubject(tempSubjectName);
+            subjectData.setID(tempID);
+            subjectData.setPW(tempPW);
+            subjectData.setColor(tempColor);
+            subjectData.setAlarmBefore(Integer.parseInt(tempAlarmTime));
+            subjectData.setUseAlarm(tempUseAlarm);
+            recyclerviewAdapter.addItem(subjectData);
             arrayIndex.add(tempIndex);
         }
         cursor.close();
@@ -123,19 +123,19 @@ public class subject_setting extends AppCompatActivity {
 
             @Override
             public void onChangeClick(int position) {
-                Data recentData = recyclerviewAdapter.items.get(position);
-                et_subject.setText(recentData.getSubject());
-                et_ID.setText(recentData.getID());
-                et_PW.setText(recentData.getPW());
-                tempColor = recentData.getColor();
+                SubjectData recentSubjectData = recyclerviewAdapter.items.get(position);
+                et_subject.setText(recentSubjectData.getSubject());
+                et_ID.setText(recentSubjectData.getID());
+                et_PW.setText(recentSubjectData.getPW());
+                tempColor = recentSubjectData.getColor();
                 btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
-                cb_alarm.setChecked(recentData.getUseAlarm());
-                if (recentData.getUseAlarm()) {
+                cb_alarm.setChecked(recentSubjectData.getUseAlarm());
+                if (recentSubjectData.getUseAlarm()) {
                     linearLayout.setVisibility(View.VISIBLE);
                 } else {
                     linearLayout.setVisibility(View.INVISIBLE);
                 }
-                np_alarmTime.setValue(recentData.getAlarmBefore());
+                np_alarmTime.setValue(recentSubjectData.getAlarmBefore());
 
                 runDialog(position, CHANGEITEM);
             }
@@ -200,32 +200,32 @@ public class subject_setting extends AppCompatActivity {
     }
 
     public void addItem(String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
-        Data data = new Data();
-        data.setSubject(subject);
-        data.setID(ID);
-        data.setPW(PW);
-        data.setColor(color);
-        data.setAlarmBefore(alarmTime);
-        data.setUseAlarm(useAlarm);
-        recyclerviewAdapter.addItem(data);
+        SubjectData subjectData = new SubjectData();
+        subjectData.setSubject(subject);
+        subjectData.setID(ID);
+        subjectData.setPW(PW);
+        subjectData.setColor(color);
+        subjectData.setAlarmBefore(alarmTime);
+        subjectData.setUseAlarm(useAlarm);
+        recyclerviewAdapter.addItem(subjectData);
         recyclerviewAdapter.notifyDataSetChanged();
-        dbOpenHelper.insertColumn(SUBJECT, data);
+        dbOpenHelper.insertSubject(subjectData);
         freshArray();
     }
 
     public void changeItem(int position, String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
         recyclerviewAdapter.items.remove(position);
-        Data data = new Data();
-        data.setSubject(subject);
-        data.setID(ID);
-        data.setPW(PW);
-        data.setColor(color);
-        data.setAlarmBefore(alarmTime);
-        data.setUseAlarm(useAlarm);
-        recyclerviewAdapter.items.add(position, data);
+        SubjectData subjectData = new SubjectData();
+        subjectData.setSubject(subject);
+        subjectData.setID(ID);
+        subjectData.setPW(PW);
+        subjectData.setColor(color);
+        subjectData.setAlarmBefore(alarmTime);
+        subjectData.setUseAlarm(useAlarm);
+        recyclerviewAdapter.items.add(position, subjectData);
         recyclerviewAdapter.notifyDataSetChanged();
         nowIndex = Long.parseLong(arrayIndex.get(position));
-        dbOpenHelper.updateColumn(nowIndex, SUBJECT, data);
+        dbOpenHelper.updateSubject(nowIndex, subjectData);
         freshArray();
     }
 
@@ -233,11 +233,11 @@ public class subject_setting extends AppCompatActivity {
         dialog1.show();
 
         if (changeType == ADDITEM) {
-            tv_dialogType1.setText("add subject");
-            tv_dialogType2.setText("add subject");
+            tv_dialogType1.setText(R.string.add_subject);
+            tv_dialogType2.setText(R.string.add_subject);
         } else if (changeType == CHANGEITEM) {
-            tv_dialogType1.setText("change subject");
-            tv_dialogType2.setText("change subject");
+            tv_dialogType1.setText(R.string.change_subject);
+            tv_dialogType2.setText(R.string.change_subject);
         }
         btn_colorPicker.setOnClickListener(new View.OnClickListener() {
             @Override

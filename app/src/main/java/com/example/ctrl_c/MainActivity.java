@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     frag_setting frag_setting;
 
     static String SUBJECT = "subject";
+    static String TIMETABLE = "timetable";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         mdbOpenHelper.open(SUBJECT);
         mdbOpenHelper.create(SUBJECT);
         mdbOpenHelper.close(SUBJECT);
+
+        mdbOpenHelper.open(TIMETABLE);
+        mdbOpenHelper.create(TIMETABLE);
+        mdbOpenHelper.close(TIMETABLE);
 
         bottomNavigationView = findViewById(R.id.bottom);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
