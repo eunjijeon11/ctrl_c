@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ctrl_c</string>
+    <string name="add_subject">add subject</string>
+    <string name="change_subject">change subject</string>
 </resources>

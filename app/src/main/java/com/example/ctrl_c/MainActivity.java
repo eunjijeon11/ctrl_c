@@ -35,10 +35,6 @@ public class MainActivity extends AppCompatActivity {
         mdbOpenHelper.create(SUBJECT);
         mdbOpenHelper.close(SUBJECT);
 
-        mdbOpenHelper.open(TIMETABLE);
-        mdbOpenHelper.create(TIMETABLE);
-        mdbOpenHelper.close(TIMETABLE);
-
         bottomNavigationView = findViewById(R.id.bottom);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

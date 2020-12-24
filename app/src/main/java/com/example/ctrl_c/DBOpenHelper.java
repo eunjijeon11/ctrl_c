@@ -64,7 +64,7 @@ public class DBOpenHelper {
     private static class TimetableDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "TimetableDataBase.db";
-        private static final int DB_Version = 1;
+        private static final int DB_Version = 4;
 
         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -96,7 +96,7 @@ public class DBOpenHelper {
                 sDB = subjectDBHelper.getWritableDatabase();
                 break;
             case "timetable":
-                timetableDBHelper = new TimetableDBHelper(mContext, SubjectDBHelper.DB_NAME, null, TimetableDBHelper.DB_Version);
+                timetableDBHelper = new TimetableDBHelper(mContext, TimetableDBHelper.DB_NAME, null, TimetableDBHelper.DB_Version);
                 tDB = timetableDBHelper.getWritableDatabase();
                 break;
         }

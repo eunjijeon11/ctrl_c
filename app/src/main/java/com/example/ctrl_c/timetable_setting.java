@@ -3,6 +3,7 @@ package com.example.ctrl_c;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,19 +13,27 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 /******************************************************
- * TODO: made timetable
+ * TODO: made timetable                      ******DONE
  * TODO: enable timetable setting
- * TODO: save setting in sharedPreference
+ * TODO: save setting in SQLite Database
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
 
-    RecyclerView recyclerView;
-    timetable_subject_recyclerviewAdapter recyclerviewAdapter;
+    RecyclerView rv_subjectView;
+    timetable_subject_recyclerviewAdapter ra_timetable_subject;
+
+    RecyclerView rv_timetable;
+    timetable_recyclerViewAdapter ra_timetable;
+
+    GridLayout gl_timetable;
+    CardView cv_addRow;
 
     DBOpenHelper dbOpenHelper;
     String SUBJECT = "subject";
@@ -35,12 +44,43 @@ public class timetable_setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timetable_setting);
 
-        recyclerView = findViewById(R.id.rv_timetable_subject);
+        rv_timetable = findViewById(R.id.rv_timetable);
+        rv_subjectView = findViewById(R.id.rv_timetable_subject);
+        cv_addRow = findViewById(R.id.cv_addRow);
+        gl_timetable = findViewById(R.id.gl_timetable);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5);
+        rv_timetable.setLayoutManager(gridLayoutManager);
+        ra_timetable = new timetable_recyclerViewAdapter();
+        rv_timetable.setAdapter(ra_timetable);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerviewAdapter = new timetable_subject_recyclerviewAdapter();
-        recyclerView.setAdapter(recyclerviewAdapter);
+        rv_subjectView.setLayoutManager(linearLayoutManager);
+        ra_timetable_subject = new timetable_subject_recyclerviewAdapter();
+        rv_subjectView.setAdapter(ra_timetable_subject);
+
+        for(int i=0;i<5;i++) {
+            SubjectData data = new SubjectData();
+            data.setSubject("");
+            data.setColor("#ffffff");
+            ra_timetable.addItem(data);
+        }
+        ra_timetable.notifyDataSetChanged();
+
+        cv_addRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i=0;i<5;i++) {
+                    SubjectData data = new SubjectData();
+                    data.setSubject("");
+                    data.setColor("#ffffff");
+                    ra_timetable.addItem(data);
+                }
+                ra_timetable.notifyDataSetChanged();
+
+                //gl_timetable.addView();
+            }
+        });
 
         readDB();
     }
@@ -55,26 +95,10 @@ public class timetable_setting extends AppCompatActivity {
             SubjectData subjectData = new SubjectData();
             subjectData.setSubject(tempSubject);
             subjectData.setColor(tempColor);
-            recyclerviewAdapter.addItem(subjectData);
+            ra_timetable_subject.addItem(subjectData);
         }
-        recyclerviewAdapter.notifyDataSetChanged();
+        ra_timetable_subject.notifyDataSetChanged();
         dbOpenHelper.close(SUBJECT);
-
-        dbOpenHelper.open(TIMETABLE);
-        Cursor cursor1 = dbOpenHelper.selectColumns(TIMETABLE);
-        while (cursor.moveToNext()) {
-            ArrayList<String> classes = new ArrayList<>();
-            classes.add(cursor1.getString(cursor1.getColumnIndex("mon")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("tue")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("wed")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("thu")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("fri")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("sat")));
-            classes.add(cursor1.getString(cursor1.getColumnIndex("sun")));
-            //gridViewAdapter.addItem(classes);
-        }
-        //GridViewAdapter.notifyDataDetChanged();
-        dbOpenHelper.close(TIMETABLE);
     }
 
     public static class timetable_subject_recyclerviewAdapter extends RecyclerView.Adapter<timetable_subject_recyclerviewAdapter.ViewHolder>{
