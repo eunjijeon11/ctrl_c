@@ -49,7 +49,7 @@ public class subject_setting extends AppCompatActivity {
     Long nowIndex;
 
     RecyclerView recyclerView;
-    subject_RecyclerViewAdapter recyclerviewAdapter;
+    subject_rvAdapter recyclerviewAdapter;
     CardView cv_add;
 
     Dialog dialog1;
@@ -81,7 +81,7 @@ public class subject_setting extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerviewAdapter = new subject_RecyclerViewAdapter();
+        recyclerviewAdapter = new subject_rvAdapter();
         recyclerView.setAdapter(recyclerviewAdapter);
 
         //readDB
@@ -113,7 +113,7 @@ public class subject_setting extends AppCompatActivity {
         setDialog();
 
         final ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-        recyclerviewAdapter.setOnItemClickListener(new subject_RecyclerViewAdapter.OnItemClickListener() {
+        recyclerviewAdapter.setOnItemClickListener(new subject_rvAdapter.OnItemClickListener() {
             @Override
             public void onCopyClick(int position) {
                 ClipData clip = ClipData.newPlainText("ID", recyclerviewAdapter.items.get(position).getID());

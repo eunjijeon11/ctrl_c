@@ -1,6 +1,5 @@
 package com.example.ctrl_c;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_RecyclerViewAdapter.ViewHolder> {
+public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.ViewHolder> {
 
     public ArrayList<SubjectData> items = new ArrayList<>();
     private OnItemClickListener listener;

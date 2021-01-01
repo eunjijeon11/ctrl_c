@@ -1,6 +1,5 @@
 package com.example.ctrl_c;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class timetable_recyclerViewAdapter extends RecyclerView.Adapter<timetable_recyclerViewAdapter.ViewHolder> {
+public class timetable_rvAdapter extends RecyclerView.Adapter<timetable_rvAdapter.ViewHolder> {
 
     ArrayList<SubjectData> items = new ArrayList<>();
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.timetable_subject_view, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.timetable_recyclerview, parent, false);
         return new ViewHolder(v);
     }
 

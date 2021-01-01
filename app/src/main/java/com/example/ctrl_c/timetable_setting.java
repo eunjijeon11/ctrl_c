@@ -12,8 +12,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +32,14 @@ import java.util.Map;
 public class timetable_setting extends AppCompatActivity {
 
     RecyclerView rv_subjectView;
-    timetable_subject_recyclerviewAdapter ra_timetable_subject;
+    timetable_subject_rvAdapter ra_timetable_subject;
     int selectedPosition = -1;
     SubjectData recentData;
 
     RecyclerView rv_timetable;
-    timetable_recyclerViewAdapter ra_timetable;
+    timetable_rvAdapter ra_timetable;
+    RecyclerView rv_timetable_row;
+    timetable_row_rvAdapter ra_timetable_row;
 
     GridLayout gl_timetable;
     CardView cv_addRow;
@@ -57,45 +57,64 @@ public class timetable_setting extends AppCompatActivity {
 
         //init
         rv_timetable = findViewById(R.id.rv_timetable);
+        rv_timetable_row = findViewById(R.id.rv_timetable_row);
         rv_subjectView = findViewById(R.id.rv_timetable_subject);
         cv_addRow = findViewById(R.id.cv_addRow);
         gl_timetable = findViewById(R.id.gl_timetable);
         btn_save = findViewById(R.id.btn_timetable_save);
 
-        //recyclerview
+        //timetable recyclerview
         rv_timetable.addItemDecoration(new DividerItemDecoration(this, GridLayoutManager.HORIZONTAL));
         rv_timetable.addItemDecoration(new DividerItemDecoration(this, GridLayoutManager.VERTICAL));
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 7);
         rv_timetable.setLayoutManager(gridLayoutManager);
-        ra_timetable = new timetable_recyclerViewAdapter();
+        ra_timetable = new timetable_rvAdapter();
         rv_timetable.setAdapter(ra_timetable);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        rv_subjectView.setLayoutManager(linearLayoutManager);
-        ra_timetable_subject = new timetable_subject_recyclerviewAdapter();
-        rv_subjectView.setAdapter(ra_timetable_subject);
+        //timetable row recyclerview
+        LinearLayoutManager linearLayoutManager_row = new LinearLayoutManager(this);
+        rv_timetable_row.setLayoutManager(linearLayoutManager_row);
+        ra_timetable_row = new timetable_row_rvAdapter();
+        rv_timetable_row.setAdapter(ra_timetable_row);
 
         //시간표 기능
+        ra_timetable_row.setOnItemClickListener(new timetable_row_rvAdapter.OnItemClickListener() {
+            @Override
+            public void onItemChange(View v, int position) {
+                //다이얼로그 띄워서 교시 정보 바꾸기
+            }
+
+            @Override
+            public void onItemDelete(View v, int position) {
+                //교시 지우기
+                ra_timetable_row.items.remove(position);
+                for (int i=0;i<ra_timetable_row.getItemCount();i++) {
+                    if (i >= position) {
+                        rowData temp = ra_timetable_row.items.get(i);
+                        temp.setRow(temp.getRow()-1);
+                        ra_timetable_row.items.set(i, temp);
+                    }
+                }
+                ra_timetable_row.notifyDataSetChanged();
+
+                for (int i=0;i<7;i++) {
+                    ra_timetable.items.remove(position * 7);
+                }
+                ra_timetable.notifyDataSetChanged();
+            }
+        });
         addRow(); //첫번째 줄 추가 or readDB
 
-        cv_addRow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addRow();
-            }
-        });
-
-        btn_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //시간표 저장
-            }
-        });
+        //subject recyclerview
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rv_subjectView.setLayoutManager(linearLayoutManager);
+        ra_timetable_subject = new timetable_subject_rvAdapter();
+        rv_subjectView.setAdapter(ra_timetable_subject);
 
         readDB();
 
         //과목 버튼 기능
-        ra_timetable_subject.setOnItemSelectedListener(new timetable_subject_recyclerviewAdapter.OnItemSelectedListener() {
+        ra_timetable_subject.setOnItemSelectedListener(new timetable_subject_rvAdapter.OnItemSelectedListener() {
             @Override
             public void onSelected(int position) {
                 if (position != selectedPosition) { //같은 과목을 클릭한게 아니면:
@@ -111,6 +130,20 @@ public class timetable_setting extends AppCompatActivity {
                 }
             }
         });
+
+        cv_addRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRow();
+            }
+        });
+
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //시간표 저장
+            }
+        });
     }
 
     void addRow() {
@@ -122,21 +155,11 @@ public class timetable_setting extends AppCompatActivity {
         }
         ra_timetable.notifyDataSetChanged();
 
-        View v = LayoutInflater.from(this).inflate(R.layout.titmetable_row_view, gl_timetable, false);
-        TextView tv_row = v.findViewById(R.id.tv_timetable_row);
-        tv_row.setText(String.valueOf(gl_timetable.getRowCount()-1));
-
-        Log.e("row", String.valueOf(gl_timetable.getRowCount()));
-
-        gl_timetable.setRowCount(gl_timetable.getRowCount() + 1);
-
-        GridLayout.LayoutParams rv_params = new GridLayout.LayoutParams();
-        rv_params.columnSpec = GridLayout.spec(1, 7);
-        rv_params.rowSpec = GridLayout.spec(1, gl_timetable.getRowCount()-1);
-        rv_params.setGravity(Gravity.FILL);
-        rv_timetable.setLayoutParams(rv_params);
-
-        gl_timetable.addView(v);
+        rowData rowdata = new rowData();
+        rowdata.setRow(ra_timetable_row.getItemCount() + 1);
+        //rowdata.setStartTime(); 다이얼로그에서 시작 시간 받아서 넣기
+        ra_timetable_row.addItem(rowdata);
+        ra_timetable_row.notifyDataSetChanged();
     }
 
     void readDB() {
@@ -156,7 +179,7 @@ public class timetable_setting extends AppCompatActivity {
         dbOpenHelper.close(SUBJECT);
     }
 
-    public static class timetable_subject_recyclerviewAdapter extends RecyclerView.Adapter<timetable_subject_recyclerviewAdapter.ViewHolder>{
+    public static class timetable_subject_rvAdapter extends RecyclerView.Adapter<timetable_subject_rvAdapter.ViewHolder>{
 
         ArrayList<SubjectData> items = new ArrayList<>();
 
@@ -165,7 +188,7 @@ public class timetable_setting extends AppCompatActivity {
             void onSelected(int position);
         }
         public void setOnItemSelectedListener(OnItemSelectedListener listener) {
-            timetable_subject_recyclerviewAdapter.listener = listener;
+            timetable_subject_rvAdapter.listener = listener;
         }
 
         @NonNull
