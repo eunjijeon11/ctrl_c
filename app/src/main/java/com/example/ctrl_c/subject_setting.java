@@ -56,7 +56,7 @@ public class subject_setting extends AppCompatActivity {
     TextView tv_dialogType1;
     EditText et_subject, et_ID, et_PW;
     Button btn_cancel1, btn_next, btn_colorPicker;
-    String tempColor = "#FFFFFF";
+    int tempColor;
 
     Dialog dialog2;
     TextView tv_dialogType2;
@@ -96,7 +96,7 @@ public class subject_setting extends AppCompatActivity {
             String tempSubjectName = cursor.getString(cursor.getColumnIndex("subjectName"));
             String tempID = cursor.getString(cursor.getColumnIndex("id"));
             String tempPW = cursor.getString(cursor.getColumnIndex("password"));
-            String tempColor = cursor.getString(cursor.getColumnIndex("color"));
+            int tempColor = cursor.getInt(cursor.getColumnIndex("color"));
             String tempAlarmTime = cursor.getString(cursor.getColumnIndex("alarm_before"));
             boolean tempUseAlarm = (cursor.getInt(cursor.getColumnIndex("useAlarm")) != 0);
             subjectData.setSubject(tempSubjectName);
@@ -128,7 +128,7 @@ public class subject_setting extends AppCompatActivity {
                 et_ID.setText(recentSubjectData.getID());
                 et_PW.setText(recentSubjectData.getPW());
                 tempColor = recentSubjectData.getColor();
-                btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
+                btn_colorPicker.setBackgroundColor(tempColor);
                 cb_alarm.setChecked(recentSubjectData.getUseAlarm());
                 if (recentSubjectData.getUseAlarm()) {
                     linearLayout.setVisibility(View.VISIBLE);
@@ -167,11 +167,11 @@ public class subject_setting extends AppCompatActivity {
         cv_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tempColor = "#FFFFFF";
+                tempColor = Color.parseColor("#FFFFFF");
                 et_subject.setText("");
                 et_ID.setText("");
                 et_PW.setText("");
-                btn_colorPicker.setBackgroundColor(Color.parseColor(tempColor));
+                btn_colorPicker.setBackgroundColor(tempColor);
                 cb_alarm.setChecked(false);
                 np_alarmTime.setValue(0);
                 runDialog(recyclerviewAdapter.items.size(), ADDITEM);
@@ -199,7 +199,7 @@ public class subject_setting extends AppCompatActivity {
         cursor.close();
     }
 
-    public void addItem(String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
+    public void addItem(String subject, String ID, String PW, int color, int alarmTime, Boolean useAlarm) {
         SubjectData subjectData = new SubjectData();
         subjectData.setSubject(subject);
         subjectData.setID(ID);
@@ -213,7 +213,7 @@ public class subject_setting extends AppCompatActivity {
         freshArray();
     }
 
-    public void changeItem(int position, String subject, String ID, String PW, String color, int alarmTime, Boolean useAlarm) {
+    public void changeItem(int position, String subject, String ID, String PW, int color, int alarmTime, Boolean useAlarm) {
         recyclerviewAdapter.items.remove(position);
         SubjectData subjectData = new SubjectData();
         subjectData.setSubject(subject);
@@ -321,13 +321,13 @@ public class subject_setting extends AppCompatActivity {
         et_PW = dialog1.findViewById(R.id.et_PW);
         btn_colorPicker = dialog1.findViewById(R.id.btn_colorPicker);
         btn_cancel1 = dialog1.findViewById(R.id.btn_cancel);
-        btn_next = dialog1.findViewById(R.id.btn_next);
+        btn_next = dialog1.findViewById(R.id.btn_dialogNext);
 
         tv_dialogType2 = dialog2.findViewById(R.id.tv_dialogType2);
         cb_alarm = dialog2.findViewById(R.id.cb_alarm);
         np_alarmTime = dialog2.findViewById(R.id.np_alarmTime);
         btn_cancel2 = dialog2.findViewById(R.id.btn_cancel2);
-        btn_ok = dialog2.findViewById(R.id.btn_ok);
+        btn_ok = dialog2.findViewById(R.id.btn_dialogOk);
         linearLayout = dialog2.findViewById(R.id.linearLDialog);
         np_alarmTime.setMinValue(0);
         np_alarmTime.setMaxValue(20);
@@ -362,7 +362,7 @@ public class subject_setting extends AppCompatActivity {
                 .setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
                     @Override
                     public void onChooseColor(int position, int color) {
-                        tempColor = String.format("#%06X", (0xFFFFFF & color));
+                        tempColor = color;
                         btn_colorPicker.setBackgroundColor(color);
                     }
                     @Override

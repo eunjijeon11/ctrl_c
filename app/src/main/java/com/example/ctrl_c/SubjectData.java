@@ -9,7 +9,7 @@ public class SubjectData {
     private String PW;
     private int alarmBefore;
     private Boolean useAlarm;
-    private String color;
+    private int color;
 
     public  String getSubject() {
         return subject;
@@ -51,11 +51,11 @@ public class SubjectData {
         this.useAlarm = useAlarm;
     }
 
-    public String getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         this.color = color;
     }
 

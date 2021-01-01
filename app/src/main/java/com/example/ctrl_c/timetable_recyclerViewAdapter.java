@@ -44,8 +44,13 @@ public class timetable_recyclerViewAdapter extends RecyclerView.Adapter<timetabl
             cv_subject = itemView.findViewById(R.id.cv_timetable);
         }
         public void onBind(SubjectData classInfo) {
-            tv_subject.setText(classInfo.getSubject());
-            cv_subject.setCardBackgroundColor(Color.parseColor(classInfo.getColor()));
+            if (!classInfo.getSubject().equals("NONE")) {
+                tv_subject.setText(classInfo.getSubject());
+            } else {
+                tv_subject.setText("");
+            }
+
+            cv_subject.setCardBackgroundColor(classInfo.getColor());
         }
     }
 

@@ -43,7 +43,7 @@ public class DBOpenHelper {
     private static class SubjectDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "SubjectDataBase.db";
-        private static final int DB_Version = 4;
+        private static final int DB_Version = 5;
 
         public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);

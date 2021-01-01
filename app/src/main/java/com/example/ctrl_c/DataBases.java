@@ -29,7 +29,7 @@ public class DataBases {
                 + SUBJECT_NAME + " text not null , "
                 + ID + " text not null , "
                 + PASSWORD + " text not null , "
-                + COLOR + " text not null , "
+                + COLOR + " integer not null , "
                 + USE_ALARM + " integer not null , "
                 + ALARM_BEFORE + " integer not null );";
     }

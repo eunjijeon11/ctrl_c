@@ -2,19 +2,21 @@
 <androidx.cardview.widget.CardView
     android:id="@+id/cv_timetable_subject"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="30dp"
     android:layout_marginLeft="10dp"
-    app:cardElevation="0dp"
-    android:layout_marginStart="10dp">
+    android:layout_marginStart="10dp"
+    app:cardElevation="0dp">
 
     <LinearLayout
+        android:id="@+id/ll_timetable_subject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingVertical="5dp"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="20dp"
+        android:background="@drawable/stroke">
 
         <TextView
             android:id="@+id/tv_timetable_subject"

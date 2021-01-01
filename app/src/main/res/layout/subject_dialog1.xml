@@ -22,29 +22,57 @@
             android:text="add subject"
             android:textColor="@android:color/black"/>
 
-        <EditText
-            android:id="@+id/et_subject"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="과목명"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/et_ID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="ID/URL"
-            android:inputType="text"
-            android:autofillHints="" />
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="과목명"
+                    android:textSize="15sp"
+                    android:textColor="@color/black_de"/>
+                <EditText
+                    android:id="@+id/et_subject"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="text"
+                    android:autofillHints="" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="ID/URL"
+                    android:textSize="15sp"
+                    android:textColor="@color/black_de"/>
+                <EditText
+                    android:id="@+id/et_ID"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="text"
+                    android:autofillHints="" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="비밀번호"
+                    android:textSize="15sp"
+                    android:textColor="@color/black_de"/>
+                <EditText
+                    android:id="@+id/et_PW"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="textPassword"
+                    android:autofillHints="" />
+            </TableRow>
 
-        <EditText
-            android:id="@+id/et_PW"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="비밀번호"
-            android:inputType="textPassword"
-            android:autofillHints="" />
+        </TableLayout>
 
         <Button
             android:id="@+id/btn_colorPicker"
@@ -52,7 +80,7 @@
             android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:text="색상선택"
-            android:textSize="18sp"/>
+            android:textSize="15sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -70,7 +98,7 @@
                 android:layout_weight="1" />
 
             <Button
-                android:id="@+id/btn_next"
+                android:id="@+id/btn_dialogNext"
                 android:text="next"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@color/black_de"
@@ -79,7 +107,6 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-
-
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

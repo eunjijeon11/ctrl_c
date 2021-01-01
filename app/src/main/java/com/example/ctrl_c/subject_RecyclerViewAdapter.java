@@ -36,7 +36,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         TextView tv_alarmBefore;
         ImageButton btn_copy, btn_delete;
         Boolean useAlarm;
-        String ID, PW, alarmBefore, color;
+        String ID, PW, alarmBefore;
+        int color;
         CardView cv_background;
 
         public ViewHolder(@NonNull View itemView) {
@@ -92,7 +93,7 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             PW = "PW: " + subjectData.getPW();
             color = subjectData.getColor();
 
-            cv_background.setCardBackgroundColor(Color.parseColor(color));
+            cv_background.setCardBackgroundColor(color);
             tv_subject.setText(subjectData.getSubject());
             tv_ID.setText(ID);
             tv_PW.setText(PW);
