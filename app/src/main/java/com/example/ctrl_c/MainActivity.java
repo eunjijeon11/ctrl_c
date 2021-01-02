@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     frag_alarm frag_alarm;
     frag_timetable frag_timetable;
     frag_setting frag_setting;
+    int currentFrag = 0;
 
     static String SUBJECT = "subject";
     static String TIMETABLE = "timetable";
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         frag_alarm = new frag_alarm();
         frag_timetable = new frag_timetable();
         frag_setting = new frag_setting();
-        setFrag(0);
+        setFrag(currentFrag);
 
     }
 
@@ -68,14 +69,17 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 fragmentTransaction.replace(R.id.frame_main, frag_alarm);
                 fragmentTransaction.commit();
+                currentFrag = 0;
                 break;
             case 1:
                 fragmentTransaction.replace(R.id.frame_main, frag_timetable);
                 fragmentTransaction.commit();
+                currentFrag = 1;
                 break;
             case 2:
                 fragmentTransaction.replace(R.id.frame_main, frag_setting);
                 fragmentTransaction.commit();
+                currentFrag = 2;
                 break;
         }
     }

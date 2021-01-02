@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +27,8 @@ import java.util.Map;
 
 /******************************************************
  * TODO: made timetable                      ******DONE
- * TODO: enable timetable setting
- * TODO: save setting in SQLite Database
+ * TODO: enable timetable setting            ****
+ * TODO: save timetable in SQLite Database
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
 
@@ -46,7 +47,7 @@ public class timetable_setting extends AppCompatActivity {
 
     DBOpenHelper dbOpenHelper;
     String SUBJECT = "subject";
-    String TIMETABLE = "timetable";
+    //String TIMETABLE = "timetable";
 
     Button btn_save;
 
@@ -62,6 +63,7 @@ public class timetable_setting extends AppCompatActivity {
         cv_addRow = findViewById(R.id.cv_addRow);
         gl_timetable = findViewById(R.id.gl_timetable);
         btn_save = findViewById(R.id.btn_timetable_save);
+        recentData = null;
 
         //timetable recyclerview
         rv_timetable.addItemDecoration(new DividerItemDecoration(this, GridLayoutManager.HORIZONTAL));
@@ -78,6 +80,16 @@ public class timetable_setting extends AppCompatActivity {
         rv_timetable_row.setAdapter(ra_timetable_row);
 
         //시간표 기능
+        ra_timetable.setOnItemClickListener(new timetable_rvAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                if (recentData != null) {
+                    ra_timetable.items.set(position, recentData);
+                    ra_timetable.notifyDataSetChanged();
+                }
+            }
+        });
+
         ra_timetable_row.setOnItemClickListener(new timetable_row_rvAdapter.OnItemClickListener() {
             @Override
             public void onItemChange(View v, int position) {
@@ -122,12 +134,15 @@ public class timetable_setting extends AppCompatActivity {
                         recentData.setID("unselected");
                         ra_timetable_subject.items.set(selectedPosition, recentData);
                     }
-                    recentData = ra_timetable_subject.items.get(position); //recentdata 바꿈
+                    recentData = ra_timetable_subject.items.get(position); //recent data 바꿈
                     recentData.setID("selected");
                     ra_timetable_subject.items.set(position, recentData);
-                    ra_timetable_subject.notifyDataSetChanged();
                     selectedPosition = position;
+                } else { //같은 과목 클릭하면 선택 효과 사라짐
+                    ra_timetable_subject.items.get(position).setID("unselected");
+                    recentData = null;
                 }
+                ra_timetable_subject.notifyDataSetChanged();
             }
         });
 
@@ -242,7 +257,6 @@ public class timetable_setting extends AppCompatActivity {
                 } else {
                     tv_timetable_subject.setText(subjectData.getSubject());
                 }
-                tv_timetable_subject.setText(subjectData.getSubject());
                 GradientDrawable drawable = (GradientDrawable) ll_timetable_subject.getBackground();
                 String type = subjectData.getID();
                 if(type.equals("selected")) { //선택

@@ -15,6 +15,14 @@ public class timetable_rvAdapter extends RecyclerView.Adapter<timetable_rvAdapte
 
     ArrayList<SubjectData> items = new ArrayList<>();
 
+    private OnItemClickListener listener = null;
+    public interface OnItemClickListener {
+        public void onItemClick(View v, int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,6 +49,18 @@ public class timetable_rvAdapter extends RecyclerView.Adapter<timetable_rvAdapte
             super(itemView);
             tv_subject = itemView.findViewById(R.id.tv_timetable);
             cv_subject = itemView.findViewById(R.id.cv_timetable);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        if (listener != null) {
+                            listener.onItemClick(v, position);
+                        }
+                    }
+                }
+            });
         }
         public void onBind(SubjectData classInfo) {
             if (!classInfo.getSubject().equals("NONE")) {
