@@ -23,23 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-/******************************************************
- * ACTIVITY: 과목을 추가하거나 수정할 수 있는 화면
- * TODO
- * #리사이클러뷰로 과목리스트 보여줌
- * #수정 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
- * #(원래 값 들어있어야함)
- * #추가 버튼을 누르면 다이얼로그를 띄우고 값 가져와서 반영.
- * #삭제 버튼을 누르면 정말로 삭제할거냐 묻는 다이얼로그 띄움.
- * #예를 누르면 해당 아이템을 삭제.
- * #컬러픽커로 배경색 커스텀 기능 만듦
- * #과목명, ID, PW, color, alarmbefore, useAlarm를 담은 SQLite 생성
- * #SQLite 연동
- * #앱을 들어올때마다 SQLite에서 데이터를 가져와서 표시해야함.
- * frag_timetable에서 데이터 반영!
- *******************************************************/
+import java.util.ArrayList;
 
 public class subject_setting extends AppCompatActivity {
 
@@ -50,7 +36,7 @@ public class subject_setting extends AppCompatActivity {
 
     RecyclerView recyclerView;
     subject_rvAdapter recyclerviewAdapter;
-    CardView cv_add;
+    FloatingActionButton btn_add;
 
     Dialog dialog1;
     TextView tv_dialogType1;
@@ -77,7 +63,7 @@ public class subject_setting extends AppCompatActivity {
         setContentView(R.layout.activity_subject_setting);
 
         recyclerView = findViewById(R.id.rv_subject);
-        cv_add = findViewById(R.id.cv_add);
+        btn_add = findViewById(R.id.fab_addSubject);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -164,7 +150,7 @@ public class subject_setting extends AppCompatActivity {
             }
         });
 
-        cv_add.setOnClickListener(new View.OnClickListener() {
+        btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tempColor = Color.parseColor("#FFFFFF");
@@ -177,7 +163,7 @@ public class subject_setting extends AppCompatActivity {
                 runDialog(recyclerviewAdapter.items.size(), ADDITEM);
             }
         });
-        cv_add.setOnLongClickListener(new View.OnLongClickListener() {
+        btn_add.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 dbOpenHelper.deleteAllColumns(SUBJECT);

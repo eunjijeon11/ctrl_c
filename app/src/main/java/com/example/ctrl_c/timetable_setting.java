@@ -26,8 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /******************************************************
- * TODO: made timetable                      ******DONE
+ * TODO: make timetable                      ******DONE
  * TODO: enable timetable setting            ****
+ * TODO: make subject rv to tag shape
  * TODO: save timetable in SQLite Database
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
@@ -141,6 +142,7 @@ public class timetable_setting extends AppCompatActivity {
                 } else { //같은 과목 클릭하면 선택 효과 사라짐
                     ra_timetable_subject.items.get(position).setID("unselected");
                     recentData = null;
+                    selectedPosition = -1;
                 }
                 ra_timetable_subject.notifyDataSetChanged();
             }
