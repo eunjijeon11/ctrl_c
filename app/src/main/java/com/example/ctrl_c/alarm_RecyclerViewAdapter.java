@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class alarm_RecyclerViewAdapter{
-    //TODO: 새로시작하기
+public class alarm_RecyclerViewAdapter {
+    //alarmData 사용
+
 }
