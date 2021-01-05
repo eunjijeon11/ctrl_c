@@ -14,4 +14,5 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class alarm_RecyclerViewAdapter {
     //alarmData 사용
+
 }

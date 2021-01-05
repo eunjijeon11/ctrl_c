@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">ctrl_c</string>
+    <string name="add_subject">add subject</string>
+    <string name="change_subject">change subject</string>
+
+    <string-array name="color_light">
+        <item>#FFAB91</item>
+        <item>#F48FB1</item>
+        <item>#CE93D8</item>
+        <item>#B39DDB</item>
+        <item>#9FA8DA</item>
+        <item>#90CAF9</item>
+        <item>#81D4FA</item>
+        <item>#80DEEA</item>
+        <item>#80CBC4</item>
+        <item>#C5E1A5</item>
+        <item>#E6EE9C</item>
+        <item>#FFF59D</item>
+        <item>#FFE082</item>
+        <item>#FFCC80</item>
+        <item>#BCAAA4</item>
+    </string-array>
+    <string-array name="color_dark">
+        <item>#FF6F42</item>
+        <item>#F65C90</item>
+        <item>#CD57E1</item>
+        <item>#8E5FE3</item>
+        <item>#6175E4</item>
+        <item>#4DADFA</item>
+        <item>#49C3FB</item>
+        <item>#44DDF1</item>
+        <item>#49D3C6</item>
+        <item>#A8E85F</item>
+        <item>#E1F14C</item>
+        <item>#FDEC51</item>
+        <item>#F4C947</item>
+        <item>#FAAF3F</item>
+        <item>#B67C68</item>
+    </string-array>
 </resources>

@@ -1,6 +1,6 @@
 package com.example.ctrl_c;
 
-public class Data {
+public class SubjectData {
 
     //subject_recyclerview
 
@@ -9,7 +9,7 @@ public class Data {
     private String PW;
     private int alarmBefore;
     private Boolean useAlarm;
-    private String color;
+    private int color;
 
     public  String getSubject() {
         return subject;
@@ -31,8 +31,8 @@ public class Data {
         return PW;
     }
 
-    public void setPW(String M) {
-        this.PW = M;
+    public void setPW(String PW) {
+        this.PW = PW;
     }
 
     public int getAlarmBefore() {
@@ -51,41 +51,12 @@ public class Data {
         this.useAlarm = useAlarm;
     }
 
-    public String getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         this.color = color;
     }
 
-    //alarm_recyclerview
-
-    private String alarmName;
-    private boolean[] day;
-    private boolean onOff;
-
-    public String getAlarmName() {
-        return alarmName;
-    }
-
-    public void setAlarmName(String alarmName) {
-        this.alarmName = alarmName;
-    }
-
-    public boolean[] getDay() {
-        return day;
-    }
-
-    public void setDk(boolean[] day) {
-        this.day = day;
-    }
-
-    public boolean getOnOff() {
-        return onOff;
-    }
-
-    public void setOnOff(boolean onOff) {
-        this.onOff = onOff;
-    }
 }

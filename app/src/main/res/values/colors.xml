@@ -4,4 +4,36 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#50CDC2</color>
     <color name="gray">#E5E5E5</color>
+
+    <color name="color_1">#ffab91</color>
+    <color name="color_2">#F48FB1</color>
+    <color name="color_3">#ce93d8</color>
+    <color name="color_4">#b39ddb</color>
+    <color name="color_5">#9fa8da</color>
+    <color name="color_6">#90caf9</color>
+    <color name="color_7">#81d4fa</color>
+    <color name="color_8">#80deea</color>
+    <color name="color_9">#80cbc4</color>
+    <color name="color_10">#c5e1a5</color>
+    <color name="color_11">#e6ee9c</color>
+    <color name="color_12">#fff59d</color>
+    <color name="color_13">#ffe082</color>
+    <color name="color_14">#ffcc80</color>
+    <color name="color_15">#bcaaa4</color>
+
+    <color name="color_21">#FF6F42</color>
+    <color name="color_22">#F65C90</color>
+    <color name="color_23">#CD57E1</color>
+    <color name="color_24">#8E5FE3</color>
+    <color name="color_25">#6175E4</color>
+    <color name="color_26">#4DADFA</color>
+    <color name="color_27">#49C3FB</color>
+    <color name="color_28">#44DDF1</color>
+    <color name="color_29">#49D3C6</color>
+    <color name="color_30">#A8E85F</color>
+    <color name="color_31">#E1F14C</color>
+    <color name="color_32">#FDEC51</color>
+    <color name="color_33">#ffe082</color>
+    <color name="color_34">#FAAF3F</color>
+    <color name="color_35">#B67C68</color>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.ctrl_c;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_RecyclerViewAdapter.ViewHolder> {
+public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.ViewHolder> {
 
-    public ArrayList<Data> items = new ArrayList<>();
+    public ArrayList<SubjectData> items = new ArrayList<>();
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -36,7 +35,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         TextView tv_alarmBefore;
         ImageButton btn_copy, btn_delete;
         Boolean useAlarm;
-        String ID, PW, alarmBefore, color;
+        String ID, PW, alarmBefore;
+        int color;
         CardView cv_background;
 
         public ViewHolder(@NonNull View itemView) {
@@ -86,18 +86,18 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             });
         }
 
-        void onbind(Data data) {
-            alarmBefore = data.getAlarmBefore() + "분 전에 알림";
-            ID = "ID: " + data.getID();
-            PW = "PW: " + data.getPW();
-            color = data.getColor();
+        void onbind(SubjectData subjectData) {
+            alarmBefore = subjectData.getAlarmBefore() + "분 전에 알림";
+            ID = "ID: " + subjectData.getID();
+            PW = "PW: " + subjectData.getPW();
+            color = subjectData.getColor();
 
-            cv_background.setCardBackgroundColor(Color.parseColor(color));
-            tv_subject.setText(data.getSubject());
+            cv_background.setCardBackgroundColor(color);
+            tv_subject.setText(subjectData.getSubject());
             tv_ID.setText(ID);
             tv_PW.setText(PW);
             tv_alarmBefore.setText(alarmBefore);
-            useAlarm = data.getUseAlarm();
+            useAlarm = subjectData.getUseAlarm();
 
             if (!useAlarm) {
                 tv_alarmBefore.setVisibility(View.INVISIBLE);
@@ -124,8 +124,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         return items.size();
     }
 
-    public boolean addItem(Data data) {
-        items.add(data);
+    public boolean addItem(SubjectData subjectData) {
+        items.add(subjectData);
         return true;
     }
 }
