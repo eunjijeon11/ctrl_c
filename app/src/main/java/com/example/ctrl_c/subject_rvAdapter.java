@@ -3,20 +3,22 @@ package com.example.ctrl_c;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_RecyclerViewAdapter.ViewHolder> {
+public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.ViewHolder> {
 
-    public ArrayList<Data> items = new ArrayList<>();
+    public ArrayList<SubjectData> items = new ArrayList<>();
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
+        void onCopyClick(int position);
         void onChangeClick(int position);
         void onDeleteClick(int position);
     }
@@ -30,27 +32,42 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         TextView tv_subject;
         TextView tv_ID;
         TextView tv_PW;
-        TextView tv_alarmTime;
-        Button btn_change, btn_delete;
+        TextView tv_alarmBefore;
+        ImageButton btn_copy, btn_delete;
         Boolean useAlarm;
-        String ID, PW, alarmTime;
+        String ID, PW, alarmBefore;
+        int color;
+        CardView cv_background;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_subject = itemView.findViewById(R.id.tv_subject);
             tv_ID = itemView.findViewById(R.id.tv_ID);
             tv_PW = itemView.findViewById(R.id.tv_PW);
-            tv_alarmTime = itemView.findViewById(R.id.tv_alarmTime);
-            btn_change = itemView.findViewById(R.id.btn_change);
+            tv_alarmBefore = itemView.findViewById(R.id.tv_alarmBefore);
+            btn_copy = itemView.findViewById(R.id.btn_copy);
             btn_delete = itemView.findViewById(R.id.btn_delete);
+            cv_background = itemView.findViewById(R.id.cv_subject);
 
-            btn_change.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onChangeClick(position);
+                        }
+                    }
+                }
+            });
+
+            btn_copy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onCopyClick(position);
                         }
                     }
                 }
@@ -69,21 +86,23 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
             });
         }
 
-        void onbind(Data data) {
-            alarmTime = data.getAlarmTime() + "Min";
-            ID = "ID: " + data.getID();
-            PW = "PW: " + data.getPW();
+        void onbind(SubjectData subjectData) {
+            alarmBefore = subjectData.getAlarmBefore() + "분 전에 알림";
+            ID = "ID: " + subjectData.getID();
+            PW = "PW: " + subjectData.getPW();
+            color = subjectData.getColor();
 
-            tv_subject.setText(data.getSubject());
+            cv_background.setCardBackgroundColor(color);
+            tv_subject.setText(subjectData.getSubject());
             tv_ID.setText(ID);
             tv_PW.setText(PW);
-            tv_alarmTime.setText(alarmTime);
-            useAlarm = data.getUseAlarm();
+            tv_alarmBefore.setText(alarmBefore);
+            useAlarm = subjectData.getUseAlarm();
 
             if (!useAlarm) {
-                tv_alarmTime.setVisibility(View.INVISIBLE);
+                tv_alarmBefore.setVisibility(View.INVISIBLE);
             } else if (useAlarm) {
-                tv_alarmTime.setVisibility(View.VISIBLE);
+                tv_alarmBefore.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -105,7 +124,8 @@ public class subject_RecyclerViewAdapter extends RecyclerView.Adapter<subject_Re
         return items.size();
     }
 
-    void addItem(Data data) {
-        items.add(data);
+    public boolean addItem(SubjectData subjectData) {
+        items.add(subjectData);
+        return true;
     }
 }

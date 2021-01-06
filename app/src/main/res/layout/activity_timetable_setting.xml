@@ -1,9 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".timetable_setting">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".timetable_setting"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="시간표 설정"
+            android:textSize="30sp"/>
+
+        <Button
+            android:id="@+id/btn_timetable_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="저장"/>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <GridLayout
+                android:id="@+id/gl_timetable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:columnCount="8"
+                android:rowCount="2"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_column="0"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="1"
+                    android:text="월"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="2"
+                    android:text="화"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="3"
+                    android:text="수"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="4"
+                    android:text="목"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="5"
+                    android:text="금"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="6"
+                    android:text="토"/>
+                <TextView
+                    android:layout_width="150dp"
+                    android:gravity="center"
+                    android:layout_column="7"
+                    android:text="일"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_timetable_row"
+                    android:layout_gravity="fill"
+                    android:layout_row="1"
+                    android:layout_column="0"
+                    android:scrollbars="none"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_timetable"
+                    android:layout_gravity="fill"
+                    android:layout_row="1"
+                    android:layout_column="1"
+                    android:layout_columnSpan="7"
+                    android:scrollbars="none"/>
+
+            </GridLayout>
+
+        </HorizontalScrollView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_addRow"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="교시 추가"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_timetable_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

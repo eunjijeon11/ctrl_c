@@ -1,62 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.cardview.widget.CardView
+    android:id="@+id/cv_subject"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="30dp"
     android:layout_width="match_parent"
-    android:layout_height="150dp">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginTop="10dp"
+    app:cardElevation="0dp">
 
-    <Button
-        android:id="@+id/btn_change"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="change"
+        android:layout_margin="20dp">
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_delete" />
-
-    <Button
-        android:id="@+id/btn_delete"
-        android:text="delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_change"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tv_subject"
-            android:fontFamily="@font/hanna"
-            android:text="수학"
-            android:textSize="70sp"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/tv_ID"
-            android:text="zoomID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <ImageButton
+                android:id="@+id/btn_copy"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#00FF0000"
+                android:scaleType="centerCrop"
+                android:src="@drawable/copy"
+                android:contentDescription="btn_copy" />
 
-        <TextView
-            android:id="@+id/tv_PW"
-            android:text="password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <ImageButton
+                android:id="@+id/btn_delete"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginHorizontal="10dp"
+                android:background="#00FF0000"
+                android:scaleType="centerCrop"
+                android:src="@drawable/delete"
+                android:contentDescription="btn_delete" />
 
-        <TextView
-            android:id="@+id/tv_alarmTime"
-            android:text="5 Min"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:fontFamily="@font/hanna"
+                android:text="수학"
+                android:textSize="25sp"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/tv_ID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="zoomID" />
+
+            <TextView
+                android:id="@+id/tv_PW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="password" />
+
+            <TextView
+                android:id="@+id/tv_alarmBefore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="before 5 Min" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
