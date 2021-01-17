@@ -42,7 +42,7 @@ import java.util.Map;
  * TODO: enable timetable setting            ******DONE
  * TODO: save timetable in SQLite Database
  * TODO: make alarm work
- * TODO: row dialog
+ * TODO: row dialog                          ******DONE
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
 
