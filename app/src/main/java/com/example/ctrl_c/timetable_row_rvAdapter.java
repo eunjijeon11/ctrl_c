@@ -1,12 +1,18 @@
 package com.example.ctrl_c;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import java.util.ArrayList;
+
+import javax.security.auth.callback.Callback;
+
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_rvAdapter.ViewHolder> {
@@ -15,17 +21,16 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
 
     private OnItemClickListener listener = null;
     public interface OnItemClickListener {
-        public void onItemChange(View v, int position);
-        public void onItemDelete(View v, int position);
+        void onLongClick(View v, int position);
     }
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnLongClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.timetable_row_view, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.timetable_recyclerview, parent, false);
         return new ViewHolder(v);
     }
 
@@ -46,38 +51,19 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tv_row;
-        ImageButton btn_change;
-        ImageButton btn_delete;
+        CardView cv_row;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv_row = itemView.findViewById(R.id.tv_timetable_row);
-            btn_change = itemView.findViewById(R.id.btn_row_change);
-            btn_delete = itemView.findViewById(R.id.btn_row_delete);
-
-            btn_change.setOnClickListener(new View.OnClickListener() {
+            tv_row = itemView.findViewById(R.id.tv_timetable);
+            cv_row = itemView.findViewById(R.id.cv_timetable);
+            cv_row.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onClick(View v) {
-                    //열 정보 변환
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        if (listener != null) {
-                            listener.onItemChange(v, position);
-                        }
+                public boolean onLongClick(View v) {
+                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        listener.onLongClick(v, getAdapterPosition());
                     }
-                }
-            });
-
-            btn_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //열 삭제
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        if (listener != null) {
-                            listener.onItemDelete(v, position);
-                        }
-                    }
+                    return true;
                 }
             });
         }

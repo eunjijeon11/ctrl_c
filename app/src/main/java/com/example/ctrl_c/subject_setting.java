@@ -1,10 +1,8 @@
 package com.example.ctrl_c;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import petrov.kristiyan.colorpicker.ColorPicker;
 
 import android.app.Dialog;
 import android.content.ClipData;
@@ -13,12 +11,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -39,10 +39,12 @@ public class subject_setting extends AppCompatActivity {
     FloatingActionButton btn_add;
 
     Dialog dialog1;
-    TextView tv_dialogType1;
+    TextView tv_dialogType1, tv_warning;
     EditText et_subject, et_ID, et_PW;
-    Button btn_cancel1, btn_next, btn_colorPicker;
+    Button btn_cancel1, btn_next;
     int tempColor;
+    int selectedColor = -1;
+    GridLayout gl_colorPick;
 
     Dialog dialog2;
     TextView tv_dialogType2;
@@ -114,7 +116,6 @@ public class subject_setting extends AppCompatActivity {
                 et_ID.setText(recentSubjectData.getID());
                 et_PW.setText(recentSubjectData.getPW());
                 tempColor = recentSubjectData.getColor();
-                btn_colorPicker.setBackgroundColor(tempColor);
                 cb_alarm.setChecked(recentSubjectData.getUseAlarm());
                 if (recentSubjectData.getUseAlarm()) {
                     linearLayout.setVisibility(View.VISIBLE);
@@ -157,7 +158,6 @@ public class subject_setting extends AppCompatActivity {
                 et_subject.setText("");
                 et_ID.setText("");
                 et_PW.setText("");
-                btn_colorPicker.setBackgroundColor(tempColor);
                 cb_alarm.setChecked(false);
                 np_alarmTime.setValue(0);
                 runDialog(recyclerviewAdapter.items.size(), ADDITEM);
@@ -217,6 +217,13 @@ public class subject_setting extends AppCompatActivity {
 
     void runDialog(final int position, final int changeType) {
         dialog1.show();
+        if (selectedColor > -1) {
+            LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor);
+            GradientDrawable tempDrawable = (GradientDrawable) tempLinearLayout.getBackground();
+            tempDrawable.setColor(tempColor);
+            tempDrawable.setStroke(0, Color.parseColor("#000000"));
+        }
+        selectedColor = -1;
 
         if (changeType == ADDITEM) {
             tv_dialogType1.setText(R.string.add_subject);
@@ -225,12 +232,7 @@ public class subject_setting extends AppCompatActivity {
             tv_dialogType1.setText(R.string.change_subject);
             tv_dialogType2.setText(R.string.change_subject);
         }
-        btn_colorPicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openColorPicker();
-            }
-        });
+        tv_warning.setVisibility(View.GONE);
         btn_cancel1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,46 +243,51 @@ public class subject_setting extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog2.show();
+                if (!recyclerviewAdapter.isSameName(et_subject.getText().toString(), position)) {
+                    tv_warning.setVisibility(View.GONE);
 
-                final String subject = et_subject.getText().toString();
-                final String ID = et_ID.getText().toString();
-                final String PW = et_PW.getText().toString();
+                    dialog2.show();
 
-                cb_alarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (cb_alarm.isChecked()) {
-                            linearLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            linearLayout.setVisibility(View.INVISIBLE);
+                    final String subject = et_subject.getText().toString();
+                    final String ID = et_ID.getText().toString();
+                    final String PW = et_PW.getText().toString();
+
+                    cb_alarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (cb_alarm.isChecked()) {
+                                linearLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                linearLayout.setVisibility(View.INVISIBLE);
+                            }
                         }
-                    }
-                });
+                    });
 
-                btn_cancel2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog2.dismiss();
-                    }
-                });
-
-                btn_ok.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        boolean useAlarm = false;
-                        if (cb_alarm.isChecked()) useAlarm = true;
-                        int alarmTime = np_alarmTime.getValue();
-                        if (changeType == ADDITEM) {
-                            addItem(subject, ID, PW, tempColor,alarmTime, useAlarm);
-                        } else if (changeType == CHANGEITEM) {
-                            changeItem(position, subject, ID, PW, tempColor,alarmTime, useAlarm);
+                    btn_cancel2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog2.dismiss();
                         }
-                        dialog2.dismiss();
-                        dialog1.dismiss();
-                    }
-                });
+                    });
 
+                    btn_ok.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            boolean useAlarm = false;
+                            if (cb_alarm.isChecked()) useAlarm = true;
+                            int alarmTime = np_alarmTime.getValue();
+                            if (changeType == ADDITEM) {
+                                addItem(subject, ID, PW, tempColor,alarmTime, useAlarm);
+                            } else if (changeType == CHANGEITEM) {
+                                changeItem(position, subject, ID, PW, tempColor,alarmTime, useAlarm);
+                            }
+                            dialog2.dismiss();
+                            dialog1.dismiss();
+                        }
+                    });
+                } else {
+                    tv_warning.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -303,11 +310,12 @@ public class subject_setting extends AppCompatActivity {
 
         tv_dialogType1 = dialog1.findViewById(R.id.tv_dialogType1);
         et_subject = dialog1.findViewById(R.id.et_subject);
+        tv_warning = dialog1.findViewById(R.id.tv_warning);
         et_ID = dialog1.findViewById(R.id.et_ID);
         et_PW = dialog1.findViewById(R.id.et_PW);
-        btn_colorPicker = dialog1.findViewById(R.id.btn_colorPicker);
-        btn_cancel1 = dialog1.findViewById(R.id.btn_cancel);
+        btn_cancel1 = dialog1.findViewById(R.id.btn_cancel1);
         btn_next = dialog1.findViewById(R.id.btn_dialogNext);
+        gl_colorPick = dialog1.findViewById(R.id.gl_colorPick);
 
         tv_dialogType2 = dialog2.findViewById(R.id.tv_dialogType2);
         cb_alarm = dialog2.findViewById(R.id.cb_alarm);
@@ -320,42 +328,29 @@ public class subject_setting extends AppCompatActivity {
 
         btn_cancel_delete = dl_delete.findViewById(R.id.btn_cancel_delete);
         btn_ok_delete = dl_delete.findViewById(R.id.btn_ok_delete);
-    }
 
-    void openColorPicker() {
-        final ColorPicker colorPicker = new ColorPicker(this);
-        ArrayList<String> colors = new ArrayList<>();
-
-        colors.add("#ffab91");
-        colors.add("#F48FB1");
-        colors.add("#ce93d8");
-        colors.add("#b39ddb");
-        colors.add("#9fa8da");
-        colors.add("#90caf9");
-        colors.add("#81d4fa");
-        colors.add("#80deea");
-        colors.add("#80cbc4");
-        colors.add("#c5e1a5");
-        colors.add("#e6ee9c");
-        colors.add("#fff59d");
-        colors.add("#ffe082");
-        colors.add("#ffcc80");
-        colors.add("#bcaaa4");
-
-        colorPicker.setColors(colors)
-                .setColumns(5)
-                .setRoundColorButton(true)
-                .setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
-                    @Override
-                    public void onChooseColor(int position, int color) {
-                        tempColor = color;
-                        btn_colorPicker.setBackgroundColor(color);
+        final String[] colors = getResources().getStringArray(R.array.color_light);
+        for (int i=0;i<gl_colorPick.getChildCount();i++) {
+            final LinearLayout container = (LinearLayout) gl_colorPick.getChildAt(i);
+            final GradientDrawable drawable = (GradientDrawable) container.getBackground();
+            final int color = Color.parseColor(colors[i]);
+            drawable.setColor(color);
+            final int finalI = i;
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawable.setStroke(3, Color.parseColor("#000000"));
+                    if (selectedColor > -1) {
+                        LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor);
+                        GradientDrawable tempDrawable = (GradientDrawable) tempLinearLayout.getBackground();
+                        tempDrawable.setColor(tempColor);
+                        tempDrawable.setStroke(0, Color.parseColor("#000000"));
                     }
-                    @Override
-                    public void onCancel() {
-
-                    }
-                }).show();
+                    selectedColor = finalI;
+                    tempColor = color;
+                }
+            });
+        }
     }
 
     @Override

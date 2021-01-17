@@ -107,6 +107,17 @@ public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.Vi
         }
     }
 
+    public boolean isSameName(String name, int position) {
+        boolean isSame = false;
+        for (int i=0;i<items.size();i++) {
+            if (i == position) continue;
+            if (items.get(i).getSubject().equals(name)) {
+                isSame = true;
+            }
+        }
+        return isSame;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
