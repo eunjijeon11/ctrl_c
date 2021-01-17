@@ -17,21 +17,21 @@
             android:layout_marginBottom="10dp"
             android:text="caution"
             android:textSize="30sp"
-            android:textColor="@color/black_de"/>
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="한번 삭제하면 복구할 수 없습니다."
-            android:textColor="@color/black_de"
+            android:textColor="@android:color/black"
             android:layout_marginLeft="10dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="정말로 삭제하시겠습니까?"
-            android:textColor="@color/black_de"
+            android:textColor="@android:color/black"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"/>
 

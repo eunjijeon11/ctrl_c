@@ -9,11 +9,15 @@ public class DataBases {
         public static final String ALARM_NAME = "alarmName";
         public static final String HOUR = "hour";
         public static final String MIN = "min";
+        public static final String USE_DAY = "useDay";
+        public static final String  ON_OFF = "onOff";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + ALARM_NAME + " text not null , "
                 + HOUR + " integer not null , "
-                + MIN + " integer not null );";
+                + MIN + " integer not null , "
+                + USE_DAY + " text not null , "
+                + ON_OFF + " integer not null );";
     }
 
     public static final class CreateSubjectDB implements BaseColumns {

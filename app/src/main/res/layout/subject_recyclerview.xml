@@ -43,6 +43,7 @@
                 android:background="#00FF0000"
                 android:scaleType="centerCrop"
                 android:src="@drawable/delete"
+                android:tint="#FFFF4444"
                 android:contentDescription="btn_delete" />
 
         </LinearLayout>

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.ContactsContract;
 
 import androidx.annotation.Nullable;
 
@@ -22,7 +23,7 @@ public class DBOpenHelper {
     private static class AlarmDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "AlarmDataBase.db";
-        private static final int DB_Version = 1;
+        private static final int DB_Version = 2;
 
         public AlarmDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -132,9 +133,26 @@ public class DBOpenHelper {
     }
 
     //insert
+    public boolean insertAlarm(AlarmData alarmData) {
+        ContentValues values = new ContentValues();
+
+        values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());
+        values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());
+        values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());
+        boolean[] Day = alarmData.getDay();
+        String useDay = "";
+        for (boolean b : Day) {
+            String  dayInt = b ? "1" : "0";
+            useDay = useDay.concat(dayInt);
+        }
+        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
+        values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
+
+        return aDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;
+    }
+
     public boolean insertSubject(SubjectData subjectData) {
         ContentValues values = new ContentValues();
-        boolean isInsert = false;
 
         values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, subjectData.getSubject());
         values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());
@@ -143,9 +161,8 @@ public class DBOpenHelper {
         int useAlarm = subjectData.getUseAlarm() ? 1 : 0;
         values.put(DataBases.CreateSubjectDB.USE_ALARM, useAlarm);
         values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());
-        isInsert = sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
 
-        return isInsert;
+        return sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
     }
 
     public boolean insertClasses(String[] classes) {
@@ -163,18 +180,33 @@ public class DBOpenHelper {
     }
 
     //update
+    public boolean updateAlarm(long id, AlarmData alarmData) {
+        ContentValues values = new ContentValues();
+
+        values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());
+        values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());
+        values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());
+        boolean[] Day = alarmData.getDay();
+        String useDay = "";
+        for (boolean b : Day) {
+            useDay = useDay.concat(String.valueOf(b));
+        }
+        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
+        values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
+
+        return aDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, "_id=" + id, null) > 0;
+    }
+
     public boolean updateSubject(long id, SubjectData subjectData) {
         ContentValues values = new ContentValues();
-        boolean isUpdate = false;
 
         values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, subjectData.getSubject());
         values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());
         values.put(DataBases.CreateSubjectDB.PASSWORD, subjectData.getPW());
         values.put(DataBases.CreateSubjectDB.COLOR, subjectData.getColor());
         values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());
-        isUpdate = sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, "_id=" + id, null) > 0;
 
-        return isUpdate;
+        return sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
 
     public boolean updateClasses(long id, String[] classes) {
