@@ -47,6 +47,9 @@ public class DataBases {
         public static final String FRI = "fri";
         public static final String SAT = "sat";
         public static final String SUN = "sun";
+        public static final String START_HOUR = "hour";
+        public static final String START_MIN = "min";
+        public static final String USE_ALARM = "useAlarm";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + MON + " text not null , "
@@ -55,6 +58,9 @@ public class DataBases {
                 + THU + " text not null , "
                 + FRI + " text not null , "
                 + SAT + " text not null , "
-                + SUN + " text not null );";
+                + SUN + " text not null , "
+                + START_HOUR + " integer not null , "
+                + START_MIN + " integer not null , "
+                + USE_ALARM + "integer not null );";
     }
 }

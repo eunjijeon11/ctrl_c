@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     frag_setting frag_setting;
     int currentFrag = 0;
 
+    static String ALARM = "alarm";
     static String SUBJECT = "subject";
     static String TIMETABLE = "timetable";
 
@@ -32,9 +33,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DBOpenHelper mdbOpenHelper = new DBOpenHelper(this);
+        mdbOpenHelper.open(ALARM);
+        mdbOpenHelper.create(ALARM);
+        mdbOpenHelper.close(ALARM);
         mdbOpenHelper.open(SUBJECT);
         mdbOpenHelper.create(SUBJECT);
         mdbOpenHelper.close(SUBJECT);
+        mdbOpenHelper.open(TIMETABLE);
+        mdbOpenHelper.create(TIMETABLE);
+        mdbOpenHelper.close(TIMETABLE);
 
         bottomNavigationView = findViewById(R.id.bottom);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
