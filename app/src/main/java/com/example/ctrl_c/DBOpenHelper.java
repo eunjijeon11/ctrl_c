@@ -65,7 +65,7 @@ public class DBOpenHelper {
     private static class TimetableDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "TimetableDataBase.db";
-        private static final int DB_Version = 4;
+        private static final int DB_Version = 5;
 
         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -165,7 +165,7 @@ public class DBOpenHelper {
         return sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
     }
 
-    public boolean insertClasses(String[] classes) {
+    public boolean insertClasses(String[] classes, rowData mData) {
         ContentValues values = new ContentValues();
 
         values.put(DataBases.CreateTimetableDB.MON, classes[0]);
@@ -175,6 +175,9 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.FRI, classes[4]);
         values.put(DataBases.CreateTimetableDB.SAT, classes[5]);
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
+        values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
+        values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
+        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
 
         return tDB.insert(DataBases.CreateTimetableDB.TABLE_NAME, null, values) > 0;
     }
@@ -209,7 +212,7 @@ public class DBOpenHelper {
         return sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
 
-    public boolean updateClasses(long id, String[] classes) {
+    public boolean updateClasses(long id, String[] classes, rowData mData) {
         ContentValues values = new ContentValues();
 
         values.put(DataBases.CreateTimetableDB.MON, classes[0]);
@@ -219,6 +222,9 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.FRI, classes[4]);
         values.put(DataBases.CreateTimetableDB.SAT, classes[5]);
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
+        values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
+        values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
+        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
 
         return tDB.update(DataBases.CreateTimetableDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
