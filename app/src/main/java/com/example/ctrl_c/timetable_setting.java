@@ -2,35 +2,26 @@ package com.example.ctrl_c;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -66,7 +57,9 @@ public class timetable_setting extends AppCompatActivity {
 
     DBOpenHelper dbOpenHelper;
     String SUBJECT = "subject";
-    //String TIMETABLE = "timetable";
+    String TIMETABLE = "timetable";
+    String[] tColumns = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
+    ArrayList<Integer> arrayIndex;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -167,7 +160,7 @@ public class timetable_setting extends AppCompatActivity {
 
         //newData 는 빈칸에 들어가는 데이터이다
         newData = new SubjectData();
-        newData.setSubject("NONE");
+        newData.setSubject("none");
         newData.setColor(Color.parseColor("#00000000"));
         //시간표 클릭이벤트
         ra_timetable.setOnItemClickListener(new timetable_rvAdapter.OnItemClickListener() {
@@ -299,6 +292,42 @@ public class timetable_setting extends AppCompatActivity {
         }
         ra_timetable_subject.notifyDataSetChanged();
         dbOpenHelper.close(SUBJECT);
+
+        dbOpenHelper.open(TIMETABLE);
+        arrayIndex = new ArrayList<>();
+        int row = 0;
+        Cursor tCursor = dbOpenHelper.selectColumns(TIMETABLE);
+        while (tCursor.moveToNext()) { //끝날때까지 반복
+            addRow(); //교시 추가
+
+            //id 추가
+            int tempId = tCursor.getInt(tCursor.getColumnIndex("_id"));
+            arrayIndex.add(tempId);
+
+            //rowData 설정
+            rowData tempData = new rowData();
+            tempData.setStartTime(tCursor.getInt(tCursor.getColumnIndex("hour")), tCursor.getInt(tCursor.getColumnIndex("min")));
+            tempData.setRow(row + 1);
+            ra_timetable_row.items.set(row, tempData); //rowData 정보 바꾸기
+
+            //수업 불러오기
+            String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
+            for (int i=0;i<7;i++) { //월요일부터 일요일까지
+                String tempClass = tCursor.getString(tCursor.getColumnIndex(tColumns[i])); //수업 이름
+                if (!tempClass.equals("none")) { //수업이 존재하면
+                    int position = ra_timetable_subject.isInData(tempClass);
+                    if (position != -1) { //수업이 과목 정보에 존재하면
+                        ra_timetable.items.set(row * 7 + i, ra_timetable_subject.items.get(position));
+                        ra_timetable.notifyDataSetChanged();
+                        classes[i] = tempClass;
+                    }
+                }
+            }
+            dbOpenHelper.updateClasses(tempId, classes, tempData);
+            row++;
+        }
+        tCursor.close();
+        dbOpenHelper.close(TIMETABLE);
     }
 
     public static class timetable_subject_rvAdapter extends RecyclerView.Adapter<timetable_subject_rvAdapter.ViewHolder>{
@@ -322,18 +351,23 @@ public class timetable_setting extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            String[] DarkColors = holder.itemView.getResources().getStringArray(R.array.color_dark);
-            String[] LightColors = holder.itemView.getResources().getStringArray(R.array.color_light);
-            Map<String, String> colors = new HashMap<>();
-            for (int i=0;i<DarkColors.length;i++) {
-                colors.put(LightColors[i], DarkColors[i]);
-            }
-            holder.onBind(items.get(position), colors);
+            holder.onBind(items.get(position));
         }
 
         @Override
         public int getItemCount() {
             return items.size();
+        }
+
+        public int isInData(String className) {
+            int position = -1;
+            for (int i=0;i<items.size();i++) {
+                if (className.equals(items.get(i).getSubject())) {
+                    position = i;
+                    break;
+                }
+            }
+            return position;
         }
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -357,7 +391,7 @@ public class timetable_setting extends AppCompatActivity {
                 });
             }
 
-            public void onBind(SubjectData subjectData, Map<String, String> colors) {
+            public void onBind(SubjectData subjectData) {
                 if (subjectData.getSubject().length()>8) {
                     String temp = subjectData.getSubject().substring(0,8).concat("...");
                     tv_timetable_subject.setText(temp);
