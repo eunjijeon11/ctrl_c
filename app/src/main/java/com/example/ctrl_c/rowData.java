@@ -5,7 +5,6 @@ public class rowData {
     private int row;
     private int startH;
     private int startM;
-    private boolean useAlarm;
 
     public int getRow() {
         return row;
@@ -26,13 +25,5 @@ public class rowData {
     public void setStartTime(int startH, int startM) {
         this.startH = startH;
         this.startM = startM;
-    }
-
-    public void setUseAlarm(boolean useAlarm) {
-        this.useAlarm = useAlarm;
-    }
-
-    public boolean getUseAlarm() {
-        return useAlarm;
     }
 }

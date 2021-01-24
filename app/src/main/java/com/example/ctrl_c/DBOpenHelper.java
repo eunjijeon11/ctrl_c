@@ -23,7 +23,7 @@ public class DBOpenHelper {
     private static class AlarmDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "AlarmDataBase.db";
-        private static final int DB_Version = 2;
+        private static final int DB_Version = 4;
 
         public AlarmDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -65,7 +65,7 @@ public class DBOpenHelper {
     private static class TimetableDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "TimetableDataBase.db";
-        private static final int DB_Version = 5;
+        private static final int DB_Version = 6;
 
         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -139,13 +139,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());
         values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());
         values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());
-        boolean[] Day = alarmData.getDay();
-        String useDay = "";
-        for (boolean b : Day) {
-            String  dayInt = b ? "1" : "0";
-            useDay = useDay.concat(dayInt);
-        }
-        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
         values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
 
         return aDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;
@@ -177,7 +170,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
         values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
         values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
-        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
 
         return tDB.insert(DataBases.CreateTimetableDB.TABLE_NAME, null, values) > 0;
     }
@@ -189,12 +181,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());
         values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());
         values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());
-        boolean[] Day = alarmData.getDay();
-        String useDay = "";
-        for (boolean b : Day) {
-            useDay = useDay.concat(String.valueOf(b));
-        }
-        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
         values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
 
         return aDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, "_id=" + id, null) > 0;
@@ -224,7 +210,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
         values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
         values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
-        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
 
         return tDB.update(DataBases.CreateTimetableDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
