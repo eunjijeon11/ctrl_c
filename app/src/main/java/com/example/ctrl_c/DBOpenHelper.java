@@ -23,7 +23,7 @@ public class DBOpenHelper {
     private static class AlarmDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "AlarmDataBase.db";
-        private static final int DB_Version = 2;
+        private static final int DB_Version = 3;
 
         public AlarmDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -145,7 +145,6 @@ public class DBOpenHelper {
             String  dayInt = b ? "1" : "0";
             useDay = useDay.concat(dayInt);
         }
-        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
         values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
 
         return aDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;
@@ -194,7 +193,6 @@ public class DBOpenHelper {
         for (boolean b : Day) {
             useDay = useDay.concat(String.valueOf(b));
         }
-        values.put(DataBases.CreateAlarmDB.USE_DAY, useDay);
         values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);
 
         return aDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, "_id=" + id, null) > 0;
