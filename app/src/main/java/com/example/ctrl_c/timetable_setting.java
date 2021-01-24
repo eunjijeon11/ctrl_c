@@ -61,7 +61,6 @@ public class timetable_setting extends AppCompatActivity {
 
     Dialog dialog;
     NumberPicker np_Hour, np_Min;
-    SwitchCompat sc_useAlarm;
     Button btn_cancel, btn_finish;
     ImageView iv_delete;
 
@@ -93,8 +92,6 @@ public class timetable_setting extends AppCompatActivity {
         np_Hour.setMinValue(0);
         np_Min.setMaxValue(59);
         np_Min.setMinValue(0);
-        sc_useAlarm = new SwitchCompat(this);
-        sc_useAlarm = dialog.findViewById(R.id.sc_rowAlarm);
         btn_cancel = dialog.findViewById(R.id.btn_cancel);
         btn_finish = dialog.findViewById(R.id.btn_finish);
         iv_delete = dialog.findViewById(R.id.iv_delete);
@@ -122,7 +119,6 @@ public class timetable_setting extends AppCompatActivity {
                 dialog.show();
                 np_Hour.setValue(ra_timetable_row.items.get(position).getStartH());
                 np_Min.setValue(ra_timetable_row.items.get(position).getStartM());
-                sc_useAlarm.setChecked(ra_timetable_row.items.get(position).getUseAlarm());
 
                 final rowData row = ra_timetable_row.items.get(position);
                 //dialog setting
@@ -132,7 +128,6 @@ public class timetable_setting extends AppCompatActivity {
                         rowData temp = new rowData();
                         temp.setRow(row.getRow());
                         temp.setStartTime(np_Hour.getValue(), np_Min.getValue());
-                        temp.setUseAlarm(sc_useAlarm.isChecked());
                         ra_timetable_row.items.set(position, temp);
                         ra_timetable_row.notifyDataSetChanged();
                         ra_timetable.notifyDataSetChanged();
@@ -255,7 +250,6 @@ public class timetable_setting extends AppCompatActivity {
         dialog.show();
         np_Hour.setValue(0);
         np_Min.setValue(0);
-        sc_useAlarm.setChecked(false);
 
         final rowData temp = new rowData();
         btn_finish.setOnClickListener(new View.OnClickListener() {
@@ -263,7 +257,6 @@ public class timetable_setting extends AppCompatActivity {
             public void onClick(View v) {
                 temp.setRow(ra_timetable_row.getItemCount() + 1);
                 temp.setStartTime(np_Hour.getValue(), np_Min.getValue());
-                temp.setUseAlarm(sc_useAlarm.isChecked());
                 ra_timetable_row.addItem(temp);
                 ra_timetable_row.notifyDataSetChanged();
 

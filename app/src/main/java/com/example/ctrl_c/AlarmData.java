@@ -2,7 +2,6 @@ package com.example.ctrl_c;
 
 public class AlarmData {
     private String alarmName;
-    private boolean[] day;
     private int hour;
     private int min;
     private boolean onOff;
@@ -13,14 +12,6 @@ public class AlarmData {
 
     public void setAlarmName(String alarmName) {
         this.alarmName = alarmName;
-    }
-
-    public boolean[] getDay() {
-        return day;
-    }
-
-    public void setDay(boolean[] day) {
-        this.day = day;
     }
 
     public boolean getOnOff() {
