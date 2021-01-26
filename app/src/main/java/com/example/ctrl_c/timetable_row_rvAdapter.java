@@ -21,9 +21,9 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
 
     private OnItemClickListener listener = null;
     public interface OnItemClickListener {
-        void onLongClick(View v, int position);
+        void onClick(View v, int position);
     }
-    public void setOnLongClickListener(OnItemClickListener listener) {
+    public void setOnClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -57,13 +57,12 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
             super(itemView);
             tv_row = itemView.findViewById(R.id.tv_timetable);
             cv_row = itemView.findViewById(R.id.cv_timetable);
-            cv_row.setOnLongClickListener(new View.OnLongClickListener() {
+            cv_row.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public void onClick(View v) {
                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                        listener.onLongClick(v, getAdapterPosition());
+                        listener.onClick(v, getAdapterPosition());
                     }
-                    return true;
                 }
             });
         }

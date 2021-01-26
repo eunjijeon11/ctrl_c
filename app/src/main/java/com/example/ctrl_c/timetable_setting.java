@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
 /******************************************************
  * TODO: make timetable                      ******DONE
  * TODO: enable timetable setting            ******DONE
- * TODO: save timetable in SQLite Database
+ * TODO: save timetable in SQLite Database   ******DONE
  * TODO: make alarm work
  * TODO: row dialog                          ******DONE
  *******************************************************/
@@ -103,9 +104,9 @@ public class timetable_setting extends AppCompatActivity {
         ra_timetable_row = new timetable_row_rvAdapter();
         rv_timetable_row.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         rv_timetable_row.setAdapter(ra_timetable_row);
-        ra_timetable_row.setOnLongClickListener(new timetable_row_rvAdapter.OnItemClickListener() {
+        ra_timetable_row.setOnClickListener(new timetable_row_rvAdapter.OnItemClickListener() {
             @Override
-            public void onLongClick(View v, final int position) {
+            public void onClick(View v, final int position) {
                 Log.e("size", ra_timetable.getItemCount() + "");
                 Log.e("row size", ra_timetable_row.getItemCount() + "");
                 Log.e("row position", position + "");
@@ -162,6 +163,7 @@ public class timetable_setting extends AppCompatActivity {
         newData = new SubjectData();
         newData.setSubject("none");
         newData.setColor(Color.parseColor("#00000000"));
+
         //시간표 클릭이벤트
         ra_timetable.setOnItemClickListener(new timetable_rvAdapter.OnItemClickListener() {
             @Override
@@ -234,7 +236,20 @@ public class timetable_setting extends AppCompatActivity {
         cv_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //시간표 저장
+                dbOpenHelper.open(TIMETABLE);
+                dbOpenHelper.deleteAllColumns(TIMETABLE); //모두 삭제
+                for (int row = 0;row<ra_timetable_row.getItemCount();row++) {
+                    rowData mData = ra_timetable_row.items.get(row); //교시 정보 얻기
+                    String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
+                    for (int i=0;i<7;i++) {
+                        SubjectData tempData = ra_timetable.items.get(row * 7 + i);
+                        classes[i] = tempData.getSubject();
+                    }
+                    dbOpenHelper.insertClasses(classes, mData);
+                }
+                dbOpenHelper.close(TIMETABLE);
+
+                Toast.makeText(timetable_setting.this, "저장되었습니다", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -279,6 +294,8 @@ public class timetable_setting extends AppCompatActivity {
 
     void readDB() {
         dbOpenHelper = new DBOpenHelper(this);
+
+        //과목 목록 불러오기
         dbOpenHelper.open(SUBJECT);
         Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
         while(cursor.moveToNext()) {
@@ -293,12 +310,12 @@ public class timetable_setting extends AppCompatActivity {
         ra_timetable_subject.notifyDataSetChanged();
         dbOpenHelper.close(SUBJECT);
 
+        //시간표 불러오기
         dbOpenHelper.open(TIMETABLE);
         arrayIndex = new ArrayList<>();
         int row = 0;
         Cursor tCursor = dbOpenHelper.selectColumns(TIMETABLE);
         while (tCursor.moveToNext()) { //끝날때까지 반복
-            addRow(); //교시 추가
 
             //id 추가
             int tempId = tCursor.getInt(tCursor.getColumnIndex("_id"));
@@ -308,21 +325,21 @@ public class timetable_setting extends AppCompatActivity {
             rowData tempData = new rowData();
             tempData.setStartTime(tCursor.getInt(tCursor.getColumnIndex("hour")), tCursor.getInt(tCursor.getColumnIndex("min")));
             tempData.setRow(row + 1);
-            ra_timetable_row.items.set(row, tempData); //rowData 정보 바꾸기
+            ra_timetable_row.items.add(tempData); //row 추가
 
             //수업 불러오기
             String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
             for (int i=0;i<7;i++) { //월요일부터 일요일까지
                 String tempClass = tCursor.getString(tCursor.getColumnIndex(tColumns[i])); //수업 이름
-                if (!tempClass.equals("none")) { //수업이 존재하면
-                    int position = ra_timetable_subject.isInData(tempClass);
-                    if (position != -1) { //수업이 과목 정보에 존재하면
-                        ra_timetable.items.set(row * 7 + i, ra_timetable_subject.items.get(position));
-                        ra_timetable.notifyDataSetChanged();
-                        classes[i] = tempClass;
-                    }
+                int position = ra_timetable_subject.isInData(tempClass);
+                if (position != -1) { //수업이 과목 정보에 존재하면
+                    ra_timetable.addItem(ra_timetable_subject.items.get(position));
+                    classes[i] = tempClass;
+                } else {
+                    ra_timetable.addItem(newData);
                 }
             }
+            ra_timetable.notifyDataSetChanged();
             dbOpenHelper.updateClasses(tempId, classes, tempData);
             row++;
         }

@@ -4,7 +4,7 @@
     <item
         android:id="@+id/alarm"
         android:enabled="true"
-        android:title="learn"/>
+        android:title="alarm"/>
     <!--android:icon="@drawable/learn" 아이콘 추가해 희수양-->
 
     <item
