@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         frag_alarm = new frag_alarm();
         frag_timetable = new frag_timetable();
         frag_setting = new frag_setting();
-        setFrag(currentFrag);
+        setFrag(0);
 
     }
 
@@ -89,5 +89,11 @@ public class MainActivity extends AppCompatActivity {
                 currentFrag = 2;
                 break;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setFrag(currentFrag);
     }
 }
