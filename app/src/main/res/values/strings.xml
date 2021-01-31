@@ -2,12 +2,6 @@
     <string name="app_name">ctrl_c</string>
     <string name="add_subject">add subject</string>
     <string name="change_subject">change subject</string>
-    <string name="time2">시간을 설정하세요.</string>
-    <string name="time1">알람 설정</string>
-    <string name="end">완료</string>
-    <string name="hour">시</string>
-    <string name="Min">분</string>
-    <string name="save">저장</string>
 
     <string-array name="color_light">
         <item>#FFAB91</item>
