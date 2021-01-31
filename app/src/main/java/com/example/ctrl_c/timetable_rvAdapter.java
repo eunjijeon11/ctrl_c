@@ -86,7 +86,7 @@ public class timetable_rvAdapter extends RecyclerView.Adapter<timetable_rvAdapte
             });
         }
         public void onBind(SubjectData classInfo) {
-            if (!classInfo.getSubject().equals("NONE")) {
+            if (!classInfo.getSubject().equals("none")) {
                 tv_subject.setText(classInfo.getSubject());
             } else {
                 tv_subject.setText("");

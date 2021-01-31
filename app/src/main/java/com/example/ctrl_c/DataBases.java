@@ -9,14 +9,12 @@ public class DataBases {
         public static final String ALARM_NAME = "alarmName";
         public static final String HOUR = "hour";
         public static final String MIN = "min";
-        public static final String USE_DAY = "useDay";
         public static final String  ON_OFF = "onOff";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + ALARM_NAME + " text not null , "
                 + HOUR + " integer not null , "
                 + MIN + " integer not null , "
-                + USE_DAY + " text not null , "
                 + ON_OFF + " integer not null );";
     }
 
@@ -47,6 +45,8 @@ public class DataBases {
         public static final String FRI = "fri";
         public static final String SAT = "sat";
         public static final String SUN = "sun";
+        public static final String START_HOUR = "hour";
+        public static final String START_MIN = "min";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + MON + " text not null , "
@@ -55,6 +55,8 @@ public class DataBases {
                 + THU + " text not null , "
                 + FRI + " text not null , "
                 + SAT + " text not null , "
-                + SUN + " text not null );";
+                + SUN + " text not null , "
+                + START_HOUR + " integer not null , "
+                + START_MIN + " integer not null );";
     }
 }
