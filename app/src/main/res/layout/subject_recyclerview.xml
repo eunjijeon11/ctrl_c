@@ -80,12 +80,6 @@
                 android:layout_height="wrap_content"
                 android:text="password" />
 
-            <TextView
-                android:id="@+id/tv_alarmBefore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="before 5 Min" />
-
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

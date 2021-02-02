@@ -2,13 +2,19 @@ package com.example.ctrl_c;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -25,9 +31,11 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Calendar;
 
 /******************************************************
  * TODO: make timetable                      ******DONE
@@ -38,8 +46,6 @@ import java.util.Map;
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
 
-    RecyclerView rv_subjectView;
-    timetable_subject_rvAdapter ra_timetable_subject;
     int oldPosition = -1;
     SubjectData recentData, newData;
     int delete_position = -1;
@@ -50,17 +56,22 @@ public class timetable_setting extends AppCompatActivity {
     timetable_row_rvAdapter ra_timetable_row;
 
     CardView cv_addRow, cv_save;
+    ChipGroup chipGroup;
+    ArrayList<SubjectData> subjects;
 
     Dialog dialog;
-    NumberPicker np_Hour, np_Min;
+    NumberPicker np_Hour, np_Min, np_alarmBefore;
     Button btn_cancel, btn_finish;
     ImageView iv_delete;
+    SwitchCompat sw_useAlarm;
 
     DBOpenHelper dbOpenHelper;
     String SUBJECT = "subject";
     String TIMETABLE = "timetable";
     String[] tColumns = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
     ArrayList<Integer> arrayIndex;
+
+    AlarmManager alarmManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -70,10 +81,11 @@ public class timetable_setting extends AppCompatActivity {
         //init
         rv_timetable = findViewById(R.id.rv_timetable);
         rv_timetable_row = findViewById(R.id.rv_timetable_row);
-        rv_subjectView = findViewById(R.id.rv_timetable_subject);
         cv_addRow = findViewById(R.id.cv_addRow);
         cv_save = findViewById(R.id.cv_timetable_save);
+        chipGroup = findViewById(R.id.chip_group);
         recentData = null;
+        subjects = new ArrayList<>();
 
         //dialog init
         dialog = new Dialog(this);
@@ -82,13 +94,20 @@ public class timetable_setting extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         np_Hour = dialog.findViewById(R.id.np_rowHour);
         np_Min = dialog.findViewById(R.id.np_rowMin);
+        np_alarmBefore = dialog.findViewById(R.id.np_alarmBefore);
         np_Hour.setMaxValue(23);
         np_Hour.setMinValue(0);
         np_Min.setMaxValue(59);
         np_Min.setMinValue(0);
+        np_alarmBefore.setMaxValue(30);
+        np_alarmBefore.setMinValue(0);
         btn_cancel = dialog.findViewById(R.id.btn_cancel);
         btn_finish = dialog.findViewById(R.id.btn_finish);
         iv_delete = dialog.findViewById(R.id.iv_delete);
+        sw_useAlarm = dialog.findViewById(R.id.sw_useAlarm);
+
+        //alarm init
+        alarmManager = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 
         //timetable recyclerview
         rv_timetable.addItemDecoration(new DividerItemDecoration(this, GridLayoutManager.HORIZONTAL));
@@ -113,6 +132,8 @@ public class timetable_setting extends AppCompatActivity {
                 dialog.show();
                 np_Hour.setValue(ra_timetable_row.items.get(position).getStartH());
                 np_Min.setValue(ra_timetable_row.items.get(position).getStartM());
+                np_alarmBefore.setValue(ra_timetable_row.items.get(position).getAlarmBefore());
+                sw_useAlarm.setChecked(ra_timetable_row.items.get(position).getUseAlarm());
 
                 final rowData row = ra_timetable_row.items.get(position);
                 //dialog setting
@@ -122,6 +143,8 @@ public class timetable_setting extends AppCompatActivity {
                         rowData temp = new rowData();
                         temp.setRow(row.getRow());
                         temp.setStartTime(np_Hour.getValue(), np_Min.getValue());
+                        temp.setUseAlarm(sw_useAlarm.isChecked());
+                        temp.setAlarmBefore(np_alarmBefore.getValue());
                         ra_timetable_row.items.set(position, temp);
                         ra_timetable_row.notifyDataSetChanged();
                         ra_timetable.notifyDataSetChanged();
@@ -195,33 +218,20 @@ public class timetable_setting extends AppCompatActivity {
 
         });
 
-        //subject recyclerview
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        rv_subjectView.setLayoutManager(linearLayoutManager);
-        ra_timetable_subject = new timetable_subject_rvAdapter();
-        rv_subjectView.setAdapter(ra_timetable_subject);
-
         readDB(); //과목 정보 불러오기&시간표 정보 불러오기
 
         //과목 버튼 기능
-        ra_timetable_subject.setOnItemSelectedListener(new timetable_subject_rvAdapter.OnItemSelectedListener() {
+        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
             @Override
-            public void onSelected(int position) {
-                if (position != oldPosition) { //같은 과목을 클릭한게 아니면:
-                    if (oldPosition > -1) { //첫번째 선택이 아니면 이전 선택 버튼 상태 되돌림
-                        recentData.setID("unselected");
-                        ra_timetable_subject.items.set(oldPosition, recentData);
-                    }
-                    recentData = ra_timetable_subject.items.get(position); //recent data 바꿈
-                    recentData.setID("selected");
-                    ra_timetable_subject.items.set(position, recentData);
-                    oldPosition = position;
-                } else { //같은 과목 클릭하면 선택 효과 사라짐
-                    ra_timetable_subject.items.get(position).setID("unselected");
+            public void onCheckedChanged(ChipGroup group, int checkedId) {
+                Log.e("checkedId", checkedId +""); //1 based
+                if (checkedId != oldPosition) {
+                    recentData = subjects.get(checkedId-1);
+                    oldPosition = checkedId;
+                } else {
                     recentData = null;
                     oldPosition = -1;
                 }
-                ra_timetable_subject.notifyDataSetChanged();
             }
         });
 
@@ -245,6 +255,7 @@ public class timetable_setting extends AppCompatActivity {
                         SubjectData tempData = ra_timetable.items.get(row * 7 + i);
                         classes[i] = tempData.getSubject();
                     }
+                    setAlarm(classes, mData);
                     dbOpenHelper.insertClasses(classes, mData);
                 }
                 dbOpenHelper.close(TIMETABLE);
@@ -258,6 +269,8 @@ public class timetable_setting extends AppCompatActivity {
         dialog.show();
         np_Hour.setValue(0);
         np_Min.setValue(0);
+        np_alarmBefore.setValue(0);
+        sw_useAlarm.setChecked(false);
 
         final rowData temp = new rowData();
         btn_finish.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +278,8 @@ public class timetable_setting extends AppCompatActivity {
             public void onClick(View v) {
                 temp.setRow(ra_timetable_row.getItemCount() + 1);
                 temp.setStartTime(np_Hour.getValue(), np_Min.getValue());
+                temp.setUseAlarm(sw_useAlarm.isChecked());
+                temp.setAlarmBefore(np_alarmBefore.getValue());
                 ra_timetable_row.addItem(temp);
                 ra_timetable_row.notifyDataSetChanged();
 
@@ -305,9 +320,20 @@ public class timetable_setting extends AppCompatActivity {
             subjectData.setSubject(tempSubject);
             subjectData.setColor(tempColor);
             subjectData.setID("unselected");
-            ra_timetable_subject.addItem(subjectData);
+            subjects.add(subjectData);
+
+            Chip chip = new Chip(this);
+            chip.setText(tempSubject);
+            int[][] states = new int[][] {
+                    new int[] {android.R.attr.state_activated}
+            };
+            int[] color = new int[] {tempColor};
+            ColorStateList colorStateList = new ColorStateList(states, color);
+            chip.setChipBackgroundColor(colorStateList);
+            chip.setCheckable(true);
+            chip.setActivated(true);
+            chipGroup.addView(chip);
         }
-        ra_timetable_subject.notifyDataSetChanged();
         dbOpenHelper.close(SUBJECT);
 
         //시간표 불러오기
@@ -325,15 +351,17 @@ public class timetable_setting extends AppCompatActivity {
             rowData tempData = new rowData();
             tempData.setStartTime(tCursor.getInt(tCursor.getColumnIndex("hour")), tCursor.getInt(tCursor.getColumnIndex("min")));
             tempData.setRow(row + 1);
+            tempData.setUseAlarm(tCursor.getInt(tCursor.getColumnIndex("hour")) == 1);
+            tempData.setAlarmBefore(tCursor.getColumnIndex("alarmBefore"));
             ra_timetable_row.items.add(tempData); //row 추가
 
             //수업 불러오기
             String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
             for (int i=0;i<7;i++) { //월요일부터 일요일까지
                 String tempClass = tCursor.getString(tCursor.getColumnIndex(tColumns[i])); //수업 이름
-                int position = ra_timetable_subject.isInData(tempClass);
+                int position = isInData(tempClass);
                 if (position != -1) { //수업이 과목 정보에 존재하면
-                    ra_timetable.addItem(ra_timetable_subject.items.get(position));
+                    ra_timetable.addItem(subjects.get(position));
                     classes[i] = tempClass;
                 } else {
                     ra_timetable.addItem(newData);
@@ -347,90 +375,51 @@ public class timetable_setting extends AppCompatActivity {
         dbOpenHelper.close(TIMETABLE);
     }
 
-    public static class timetable_subject_rvAdapter extends RecyclerView.Adapter<timetable_subject_rvAdapter.ViewHolder>{
+    void setAlarm(String[] classes, rowData mData) {
+        boolean[] useAlarm = {false, false, false, false, false, false, false};
+        for (int i=0;i<7;i++) {
+            useAlarm[i] = !classes[i].equals("none");
+        } //교시별로 알람 사용하는지 안하는지 받아옴
 
-        ArrayList<SubjectData> items = new ArrayList<>();
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra("useAlarm", useAlarm);
+        intent.putExtra("classes", classes);
+        intent.putExtra("Type", "class");
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 20, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        private static OnItemSelectedListener listener;
-        public interface OnItemSelectedListener {
-            void onSelected(int position);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, mData.getStartH());
+        calendar.set(Calendar.MINUTE, mData.getStartM());
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long selectTime = calendar.getTimeInMillis();
+        long currentTime = System.currentTimeMillis();
+        long intervalDay = 24 * 60 * 60 * 1000;
+
+        if (selectTime>currentTime) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, selectTime, intervalDay, pIntent);
         }
-        public void setOnItemSelectedListener(OnItemSelectedListener listener) {
-            timetable_subject_rvAdapter.listener = listener;
+    }
+
+    void CancelAlarm(rowData mData) {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 20, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pIntent);
+    }
+
+    int isInData(String tempClass) {
+        int isIn = -1;
+        for (int i=0;i<subjects.size();i++) {
+            if (tempClass.equals(subjects.get(i).getSubject())) isIn = i;
         }
+        return isIn;
+    }
 
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.timetable_subject_recyclerview, parent, false);
-            return new ViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.onBind(items.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return items.size();
-        }
-
-        public int isInData(String className) {
-            int position = -1;
-            for (int i=0;i<items.size();i++) {
-                if (className.equals(items.get(i).getSubject())) {
-                    position = i;
-                    break;
-                }
-            }
-            return position;
-        }
-
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-
-            TextView tv_timetable_subject;
-            LinearLayout ll_timetable_subject;
-
-            public ViewHolder(@NonNull final View itemView) {
-                super(itemView);
-                tv_timetable_subject = itemView.findViewById(R.id.tv_timetable_subject);
-                ll_timetable_subject = itemView.findViewById(R.id.ll_timetable_subject);
-
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onSelected(position);
-                        }
-                    }
-                });
-            }
-
-            public void onBind(SubjectData subjectData) {
-                if (subjectData.getSubject().length()>8) {
-                    String temp = subjectData.getSubject().substring(0,8).concat("...");
-                    tv_timetable_subject.setText(temp);
-                } else {
-                    tv_timetable_subject.setText(subjectData.getSubject());
-                }
-
-                GradientDrawable drawable = (GradientDrawable) ll_timetable_subject.getBackground();
-                String type = subjectData.getID();
-                if(type.equals("selected")) { //선택
-                    drawable.setCornerRadius(60);
-                    drawable.setColor(subjectData.getColor());
-                    drawable.setStroke(3, Color.parseColor("#000000"));
-                } else if (type.equals("unselected")){ //선택 해제
-                    drawable.setStroke(0, Color.parseColor("#FFFFFF"));
-                    drawable.setColor(subjectData.getColor());
-                }
-            }
-        }
-
-        public void addItem(SubjectData subjectData) {
-            items.add(subjectData);
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ra_timetable.notifyDataSetChanged();
+        ra_timetable_row.notifyDataSetChanged();
     }
 }

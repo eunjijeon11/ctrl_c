@@ -13,14 +13,12 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,17 +39,10 @@ public class subject_setting extends AppCompatActivity {
     Dialog dialog1;
     TextView tv_dialogType1, tv_warning;
     EditText et_subject, et_ID, et_PW;
-    Button btn_cancel1, btn_next;
+    Button btn_cancel1, btn_finish;
     int tempColor;
     int selectedColor = -1;
     GridLayout gl_colorPick;
-
-    Dialog dialog2;
-    TextView tv_dialogType2;
-    NumberPicker np_alarmTime;
-    Button btn_cancel2, btn_ok;
-    CheckBox cb_alarm;
-    LinearLayout linearLayout;
 
     Dialog dl_delete;
     Button btn_cancel_delete, btn_ok_delete;
@@ -85,14 +76,10 @@ public class subject_setting extends AppCompatActivity {
             String tempID = cursor.getString(cursor.getColumnIndex("id"));
             String tempPW = cursor.getString(cursor.getColumnIndex("password"));
             int tempColor = cursor.getInt(cursor.getColumnIndex("color"));
-            String tempAlarmTime = cursor.getString(cursor.getColumnIndex("alarm_before"));
-            boolean tempUseAlarm = (cursor.getInt(cursor.getColumnIndex("useAlarm")) != 0);
             subjectData.setSubject(tempSubjectName);
             subjectData.setID(tempID);
             subjectData.setPW(tempPW);
             subjectData.setColor(tempColor);
-            subjectData.setAlarmBefore(Integer.parseInt(tempAlarmTime));
-            subjectData.setUseAlarm(tempUseAlarm);
             recyclerviewAdapter.addItem(subjectData);
             arrayIndex.add(tempIndex);
         }
@@ -106,7 +93,7 @@ public class subject_setting extends AppCompatActivity {
             public void onCopyClick(int position) {
                 ClipData clip = ClipData.newPlainText("ID", recyclerviewAdapter.items.get(position).getID());
                 clipboard.setPrimaryClip(clip);
-                //TODO:ID,PW를 어떤식으로 복붙할건지는 생각해봐야할듯.
+                //ID,PW를 어떤식으로 복붙할건지는 생각해봐야할듯.
             }
 
             @Override
@@ -115,14 +102,6 @@ public class subject_setting extends AppCompatActivity {
                 et_subject.setText(recentSubjectData.getSubject());
                 et_ID.setText(recentSubjectData.getID());
                 et_PW.setText(recentSubjectData.getPW());
-                tempColor = recentSubjectData.getColor();
-                cb_alarm.setChecked(recentSubjectData.getUseAlarm());
-                if (recentSubjectData.getUseAlarm()) {
-                    linearLayout.setVisibility(View.VISIBLE);
-                } else {
-                    linearLayout.setVisibility(View.INVISIBLE);
-                }
-                np_alarmTime.setValue(recentSubjectData.getAlarmBefore());
 
                 runDialog(position, CHANGEITEM);
             }
@@ -155,11 +134,10 @@ public class subject_setting extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tempColor = Color.parseColor("#FFFFFF");
+                selectedColor = -1;
                 et_subject.setText("");
                 et_ID.setText("");
                 et_PW.setText("");
-                cb_alarm.setChecked(false);
-                np_alarmTime.setValue(0);
                 runDialog(recyclerviewAdapter.items.size(), ADDITEM);
             }
         });
@@ -185,29 +163,25 @@ public class subject_setting extends AppCompatActivity {
         cursor.close();
     }
 
-    public void addItem(String subject, String ID, String PW, int color, int alarmTime, Boolean useAlarm) {
+    public void addItem(String subject, String ID, String PW, int color) {
         SubjectData subjectData = new SubjectData();
         subjectData.setSubject(subject);
         subjectData.setID(ID);
         subjectData.setPW(PW);
         subjectData.setColor(color);
-        subjectData.setAlarmBefore(alarmTime);
-        subjectData.setUseAlarm(useAlarm);
         recyclerviewAdapter.addItem(subjectData);
         recyclerviewAdapter.notifyDataSetChanged();
         dbOpenHelper.insertSubject(subjectData);
         freshArray();
     }
 
-    public void changeItem(int position, String subject, String ID, String PW, int color, int alarmTime, Boolean useAlarm) {
+    public void changeItem(int position, String subject, String ID, String PW, int color) {
         recyclerviewAdapter.items.remove(position);
         SubjectData subjectData = new SubjectData();
         subjectData.setSubject(subject);
         subjectData.setID(ID);
         subjectData.setPW(PW);
         subjectData.setColor(color);
-        subjectData.setAlarmBefore(alarmTime);
-        subjectData.setUseAlarm(useAlarm);
         recyclerviewAdapter.items.add(position, subjectData);
         recyclerviewAdapter.notifyDataSetChanged();
         nowIndex = Long.parseLong(arrayIndex.get(position));
@@ -217,20 +191,19 @@ public class subject_setting extends AppCompatActivity {
 
     void runDialog(final int position, final int changeType) {
         dialog1.show();
-        if (selectedColor > -1) {
+        if (selectedColor > -1) { //저번 다이얼로그 오픈 때 선택된 컬러가 있다면
             LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor);
             GradientDrawable tempDrawable = (GradientDrawable) tempLinearLayout.getBackground();
             tempDrawable.setColor(tempColor);
+            Log.e("tempColor", tempColor + "");
             tempDrawable.setStroke(0, Color.parseColor("#000000"));
         }
         selectedColor = -1;
 
         if (changeType == ADDITEM) {
             tv_dialogType1.setText(R.string.add_subject);
-            tv_dialogType2.setText(R.string.add_subject);
         } else if (changeType == CHANGEITEM) {
             tv_dialogType1.setText(R.string.change_subject);
-            tv_dialogType2.setText(R.string.change_subject);
         }
         tv_warning.setVisibility(View.GONE);
         btn_cancel1.setOnClickListener(new View.OnClickListener() {
@@ -240,51 +213,22 @@ public class subject_setting extends AppCompatActivity {
             }
         });
 
-        btn_next.setOnClickListener(new View.OnClickListener() {
+        btn_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!recyclerviewAdapter.isSameName(et_subject.getText().toString(), position)) {
                     tv_warning.setVisibility(View.GONE);
 
-                    dialog2.show();
-
                     final String subject = et_subject.getText().toString();
                     final String ID = et_ID.getText().toString();
                     final String PW = et_PW.getText().toString();
 
-                    cb_alarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (cb_alarm.isChecked()) {
-                                linearLayout.setVisibility(View.VISIBLE);
-                            } else {
-                                linearLayout.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
-
-                    btn_cancel2.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog2.dismiss();
-                        }
-                    });
-
-                    btn_ok.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            boolean useAlarm = false;
-                            if (cb_alarm.isChecked()) useAlarm = true;
-                            int alarmTime = np_alarmTime.getValue();
-                            if (changeType == ADDITEM) {
-                                addItem(subject, ID, PW, tempColor,alarmTime, useAlarm);
-                            } else if (changeType == CHANGEITEM) {
-                                changeItem(position, subject, ID, PW, tempColor,alarmTime, useAlarm);
-                            }
-                            dialog2.dismiss();
-                            dialog1.dismiss();
-                        }
-                    });
+                    if (changeType == ADDITEM) {
+                        addItem(subject, ID, PW, tempColor);
+                    } else if (changeType == CHANGEITEM) {
+                        changeItem(position, subject, ID, PW, tempColor);
+                    }
+                    dialog1.dismiss();
                 } else {
                     tv_warning.setVisibility(View.VISIBLE);
                 }
@@ -298,11 +242,6 @@ public class subject_setting extends AppCompatActivity {
         dialog1.setOwnerActivity(subject_setting.this);
         dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        dialog2 = new Dialog(this);
-        dialog2.setContentView(R.layout.subject_dialog2);
-        dialog2.setOwnerActivity(subject_setting.this);
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         dl_delete = new Dialog(this);
         dl_delete.setContentView(R.layout.subject_delete_dialog);
         dl_delete.setOwnerActivity(subject_setting.this);
@@ -314,17 +253,8 @@ public class subject_setting extends AppCompatActivity {
         et_ID = dialog1.findViewById(R.id.et_ID);
         et_PW = dialog1.findViewById(R.id.et_PW);
         btn_cancel1 = dialog1.findViewById(R.id.btn_cancel1);
-        btn_next = dialog1.findViewById(R.id.btn_dialogNext);
+        btn_finish = dialog1.findViewById(R.id.btn_dialogNext);
         gl_colorPick = dialog1.findViewById(R.id.gl_colorPick);
-
-        tv_dialogType2 = dialog2.findViewById(R.id.tv_dialogType2);
-        cb_alarm = dialog2.findViewById(R.id.cb_alarm);
-        np_alarmTime = dialog2.findViewById(R.id.np_alarmTime);
-        btn_cancel2 = dialog2.findViewById(R.id.btn_cancel2);
-        btn_ok = dialog2.findViewById(R.id.btn_dialogOk);
-        linearLayout = dialog2.findViewById(R.id.linearLDialog);
-        np_alarmTime.setMinValue(0);
-        np_alarmTime.setMaxValue(20);
 
         btn_cancel_delete = dl_delete.findViewById(R.id.btn_cancel_delete);
         btn_ok_delete = dl_delete.findViewById(R.id.btn_ok_delete);
@@ -336,18 +266,31 @@ public class subject_setting extends AppCompatActivity {
             final int color = Color.parseColor(colors[i]);
             drawable.setColor(color);
             final int finalI = i;
+
             container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    drawable.setStroke(3, Color.parseColor("#000000"));
-                    if (selectedColor > -1) {
-                        LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor);
+                    if (selectedColor > -1) { //이미 선택
+                        LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor); //이전 드로어블
                         GradientDrawable tempDrawable = (GradientDrawable) tempLinearLayout.getBackground();
                         tempDrawable.setColor(tempColor);
                         tempDrawable.setStroke(0, Color.parseColor("#000000"));
+
+                        if (selectedColor != finalI) { //같은 걸 선책하지 않았다면
+                            drawable.setStroke(3, Color.parseColor("#000000"));
+                            selectedColor = finalI;
+                            tempColor = color;
+                            Log.e("color", color + "");
+                        } else { //같은 것 선택
+                            selectedColor = -1;
+                            tempColor = Color.parseColor("#FFFFFF");
+                        }
+                    } else if (selectedColor == -1){ //선택한 게 없으면
+                        drawable.setStroke(3, Color.parseColor("#000000"));
+                        selectedColor = finalI;
+                        tempColor = color;
+                        Log.e("color", color + "");
                     }
-                    selectedColor = finalI;
-                    tempColor = color;
                 }
             });
         }

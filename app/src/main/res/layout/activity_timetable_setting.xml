@@ -123,12 +123,11 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_timetable_subject"
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group"
+        style="@style/Widget.MaterialComponents.Chip.Filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="30dp"
-        android:layout_marginHorizontal="10dp"
-        android:scrollbars="none" />
+        app:singleSelection="true"/>
 
 </LinearLayout>
