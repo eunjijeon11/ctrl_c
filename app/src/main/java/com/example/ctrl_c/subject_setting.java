@@ -133,8 +133,6 @@ public class subject_setting extends AppCompatActivity {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tempColor = Color.parseColor("#FFFFFF");
-                selectedColor = -1;
                 et_subject.setText("");
                 et_ID.setText("");
                 et_PW.setText("");
@@ -191,6 +189,7 @@ public class subject_setting extends AppCompatActivity {
 
     void runDialog(final int position, final int changeType) {
         dialog1.show();
+        Log.e("selectedColor", selectedColor + "");
         if (selectedColor > -1) { //저번 다이얼로그 오픈 때 선택된 컬러가 있다면
             LinearLayout tempLinearLayout = (LinearLayout) gl_colorPick.getChildAt(selectedColor);
             GradientDrawable tempDrawable = (GradientDrawable) tempLinearLayout.getBackground();

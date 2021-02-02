@@ -46,7 +46,6 @@ import java.util.Calendar;
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
 
-    int oldPosition = -1;
     SubjectData recentData, newData;
     int delete_position = -1;
 
@@ -225,12 +224,10 @@ public class timetable_setting extends AppCompatActivity {
             @Override
             public void onCheckedChanged(ChipGroup group, int checkedId) {
                 Log.e("checkedId", checkedId +""); //1 based
-                if (checkedId != oldPosition) {
+                if (checkedId != -1) {
                     recentData = subjects.get(checkedId-1);
-                    oldPosition = checkedId;
                 } else {
                     recentData = null;
-                    oldPosition = -1;
                 }
             }
         });
