@@ -7,8 +7,6 @@ public class SubjectData {
     private String subject;
     private String ID;
     private String PW;
-    private int alarmBefore;
-    private Boolean useAlarm;
     private int color;
 
     public  String getSubject() {
@@ -33,22 +31,6 @@ public class SubjectData {
 
     public void setPW(String PW) {
         this.PW = PW;
-    }
-
-    public int getAlarmBefore() {
-        return alarmBefore;
-    }
-
-    public void setAlarmBefore(int alarmBefore) {
-        this.alarmBefore = alarmBefore;
-    }
-
-    public Boolean getUseAlarm() {
-        return useAlarm;
-    }
-
-    public void setUseAlarm(Boolean useAlarm) {
-        this.useAlarm = useAlarm;
     }
 
     public int getColor() {

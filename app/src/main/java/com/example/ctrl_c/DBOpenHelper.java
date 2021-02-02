@@ -45,7 +45,7 @@ public class DBOpenHelper {
     private static class SubjectDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "SubjectDataBase.db";
-        private static final int DB_Version = 5;
+        private static final int DB_Version = 6;
 
         public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -66,7 +66,7 @@ public class DBOpenHelper {
     private static class TimetableDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "TimetableDataBase.db";
-        private static final int DB_Version = 6;
+        private static final int DB_Version = 7;
 
         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -152,9 +152,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());
         values.put(DataBases.CreateSubjectDB.PASSWORD, subjectData.getPW());
         values.put(DataBases.CreateSubjectDB.COLOR, subjectData.getColor());
-        int useAlarm = subjectData.getUseAlarm() ? 1 : 0;
-        values.put(DataBases.CreateSubjectDB.USE_ALARM, useAlarm);
-        values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());
 
         return sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
     }
@@ -171,6 +168,8 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
         values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
         values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
+        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
+        values.put(DataBases.CreateTimetableDB.ALARM_BEFORE, mData.getAlarmBefore());
 
         return tDB.insert(DataBases.CreateTimetableDB.TABLE_NAME, null, values) > 0;
     }
@@ -194,7 +193,6 @@ public class DBOpenHelper {
         values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());
         values.put(DataBases.CreateSubjectDB.PASSWORD, subjectData.getPW());
         values.put(DataBases.CreateSubjectDB.COLOR, subjectData.getColor());
-        values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());
 
         return sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
@@ -211,6 +209,8 @@ public class DBOpenHelper {
         values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
         values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
         values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
+        values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
+        values.put(DataBases.CreateTimetableDB.ALARM_BEFORE, mData.getAlarmBefore());
 
         return tDB.update(DataBases.CreateTimetableDB.TABLE_NAME, values, "_id=" + id, null) > 0;
     }
