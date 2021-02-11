@@ -237,7 +237,7 @@ public class subject_setting extends AppCompatActivity {
 
     void setDialog() {
         dialog1 = new Dialog(this);
-        dialog1.setContentView(R.layout.subject_dialog1);
+        dialog1.setContentView(R.layout.subject_dialog);
         dialog1.setOwnerActivity(subject_setting.this);
         dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 

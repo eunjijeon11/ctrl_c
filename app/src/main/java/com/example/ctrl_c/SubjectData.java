@@ -1,6 +1,8 @@
 package com.example.ctrl_c;
 
-public class SubjectData {
+import java.io.Serializable;
+
+public class SubjectData implements Serializable {
 
     //subject_recyclerview
 

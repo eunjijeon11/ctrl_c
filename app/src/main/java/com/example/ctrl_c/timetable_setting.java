@@ -1,6 +1,5 @@
 package com.example.ctrl_c;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
@@ -18,30 +17,27 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
 /******************************************************
  * TODO: make timetable                      ******DONE
  * TODO: enable timetable setting            ******DONE
  * TODO: save timetable in SQLite Database   ******DONE
  * TODO: make alarm work
+ * TODO: zoom api
  * TODO: row dialog                          ******DONE
  *******************************************************/
 public class timetable_setting extends AppCompatActivity {
@@ -68,9 +64,9 @@ public class timetable_setting extends AppCompatActivity {
     String SUBJECT = "subject";
     String TIMETABLE = "timetable";
     String[] tColumns = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"};
-    ArrayList<Integer> arrayIndex;
 
-    AlarmManager alarmManager;
+    alarmUtil myAlarmUtil;
+    ArrayList<Integer> rowList;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -106,7 +102,7 @@ public class timetable_setting extends AppCompatActivity {
         sw_useAlarm = dialog.findViewById(R.id.sw_useAlarm);
 
         //alarm init
-        alarmManager = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        myAlarmUtil = new alarmUtil(this, "class");
 
         //timetable recyclerview
         rv_timetable.addItemDecoration(new DividerItemDecoration(this, GridLayoutManager.HORIZONTAL));
@@ -125,9 +121,6 @@ public class timetable_setting extends AppCompatActivity {
         ra_timetable_row.setOnClickListener(new timetable_row_rvAdapter.OnItemClickListener() {
             @Override
             public void onClick(View v, final int position) {
-                Log.e("size", ra_timetable.getItemCount() + "");
-                Log.e("row size", ra_timetable_row.getItemCount() + "");
-                Log.e("row position", position + "");
                 dialog.show();
                 np_Hour.setValue(ra_timetable_row.items.get(position).getStartH());
                 np_Min.setValue(ra_timetable_row.items.get(position).getStartM());
@@ -193,24 +186,19 @@ public class timetable_setting extends AppCompatActivity {
                 if (delete_position == position) { //삭제버튼 누르면
                     ra_timetable.items.set(position, newData);
                     delete_position = -1;
-                    Log.e("is deleted", String.valueOf(true));
                     ra_timetable.notifyDataSetChanged();
                 } else if ((delete_position > -1) & (delete_position != position)) { //삭제모드&다른 곳 클릭
                     //원래 뷰로 돌아감
                     delete_position = -1;
-                    Log.e("clicked position", String.valueOf(position));
-                    Log.e("is deleted", String.valueOf(false));
                     ra_timetable.notifyDataSetChanged();
                 } else if ((delete_position == -1) & (recentData != null)) { //삭제모드가 아니고 과목이 선택되어있으면
                     ra_timetable.items.set(position, recentData);
-                    Log.e("changed position", String.valueOf(position));
                     ra_timetable.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onItemLongClick(View v, int position) { //길게 누를 때 한번 호출됨
-                Log.e("longClick position", String.valueOf(position));
                 //삭제모드로 바뀜
                 delete_position = position;
             }
@@ -223,7 +211,6 @@ public class timetable_setting extends AppCompatActivity {
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(ChipGroup group, int checkedId) {
-                Log.e("checkedId", checkedId +""); //1 based
                 if (checkedId != -1) {
                     recentData = subjects.get(checkedId-1);
                 } else {
@@ -245,14 +232,25 @@ public class timetable_setting extends AppCompatActivity {
             public void onClick(View v) {
                 dbOpenHelper.open(TIMETABLE);
                 dbOpenHelper.deleteAllColumns(TIMETABLE); //모두 삭제
+                deleteAllAlarm(rowList); //알람 모두 삭제
+                rowList = new ArrayList<>();
                 for (int row = 0;row<ra_timetable_row.getItemCount();row++) {
                     rowData mData = ra_timetable_row.items.get(row); //교시 정보 얻기
-                    String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
+                    Log.e("useAlarm", String.valueOf(mData.getUseAlarm()));
+                    ArrayList<SubjectData> classes = new ArrayList<>();
                     for (int i=0;i<7;i++) {
                         SubjectData tempData = ra_timetable.items.get(row * 7 + i);
-                        classes[i] = tempData.getSubject();
+                        classes.add(tempData);
                     }
-                    setAlarm(classes, mData);
+                    //알람 설정
+                    if (mData.getUseAlarm()) {
+                        myAlarmUtil.setClasses(classes);
+                        myAlarmUtil.setAlarm(mData.getRow() * 10, mData.getStartH(), mData.getStartM()-mData.getAlarmBefore(), true);
+                    } else {
+                        myAlarmUtil.setAlarm(mData.getRow() * 10, 0, 0, false);
+                    }
+                    rowList.add(mData.getRow());
+                    //데이터 쓰기
                     dbOpenHelper.insertClasses(classes, mData);
                 }
                 dbOpenHelper.close(TIMETABLE);
@@ -313,10 +311,13 @@ public class timetable_setting extends AppCompatActivity {
         while(cursor.moveToNext()) {
             String tempSubject = cursor.getString(cursor.getColumnIndex("subjectName"));
             int tempColor = cursor.getInt(cursor.getColumnIndex("color"));
+            String tempId = cursor.getString(cursor.getColumnIndex("id"));
+            String tempPW = cursor.getString(cursor.getColumnIndex("password"));
             SubjectData subjectData = new SubjectData();
             subjectData.setSubject(tempSubject);
             subjectData.setColor(tempColor);
-            subjectData.setID("unselected");
+            subjectData.setID(tempId);
+            subjectData.setPW(tempPW);
             subjects.add(subjectData);
 
             Chip chip = new Chip(this);
@@ -331,26 +332,28 @@ public class timetable_setting extends AppCompatActivity {
             chip.setActivated(true);
             chipGroup.addView(chip);
         }
+        cursor.close();
         dbOpenHelper.close(SUBJECT);
 
         //시간표 불러오기
         dbOpenHelper.open(TIMETABLE);
-        arrayIndex = new ArrayList<>();
         int row = 0;
+        rowList = new ArrayList<>();
         Cursor tCursor = dbOpenHelper.selectColumns(TIMETABLE);
         while (tCursor.moveToNext()) { //끝날때까지 반복
 
             //id 추가
             int tempId = tCursor.getInt(tCursor.getColumnIndex("_id"));
-            arrayIndex.add(tempId);
 
             //rowData 설정
             rowData tempData = new rowData();
             tempData.setStartTime(tCursor.getInt(tCursor.getColumnIndex("hour")), tCursor.getInt(tCursor.getColumnIndex("min")));
             tempData.setRow(row + 1);
-            tempData.setUseAlarm(tCursor.getInt(tCursor.getColumnIndex("hour")) == 1);
-            tempData.setAlarmBefore(tCursor.getColumnIndex("alarmBefore"));
+            tempData.setUseAlarm(tCursor.getInt(tCursor.getColumnIndex("useAlarm")) == 1);
+            tempData.setAlarmBefore(tCursor.getInt(tCursor.getColumnIndex("alarmBefore")));
             ra_timetable_row.items.add(tempData); //row 추가
+
+            rowList.add(row + 1);
 
             //수업 불러오기
             String[] classes = {"none", "none", "none", "none", "none", "none", "none"};
@@ -372,37 +375,10 @@ public class timetable_setting extends AppCompatActivity {
         dbOpenHelper.close(TIMETABLE);
     }
 
-    void setAlarm(String[] classes, rowData mData) {
-        boolean[] useAlarm = {false, false, false, false, false, false, false};
-        for (int i=0;i<7;i++) {
-            useAlarm[i] = !classes[i].equals("none");
-        } //교시별로 알람 사용하는지 안하는지 받아옴
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        intent.putExtra("useAlarm", useAlarm);
-        intent.putExtra("classes", classes);
-        intent.putExtra("Type", "class");
-        PendingIntent pIntent = PendingIntent.getBroadcast(this, 20, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, mData.getStartH());
-        calendar.set(Calendar.MINUTE, mData.getStartM());
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        long selectTime = calendar.getTimeInMillis();
-        long currentTime = System.currentTimeMillis();
-        long intervalDay = 24 * 60 * 60 * 1000;
-
-        if (selectTime>currentTime) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, selectTime, intervalDay, pIntent);
+    void deleteAllAlarm(ArrayList<Integer> rowList) {
+        for (int i=0;i<rowList.size();i++) {
+            myAlarmUtil.cancelAlarm(rowList.get(i) * 10);
         }
-    }
-
-    void CancelAlarm(rowData mData) {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(this, 20, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pIntent);
     }
 
     int isInData(String tempClass) {

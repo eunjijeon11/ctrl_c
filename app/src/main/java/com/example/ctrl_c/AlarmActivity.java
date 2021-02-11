@@ -24,14 +24,17 @@ public class AlarmActivity extends AppCompatActivity {
         tv_currentTime = findViewById(R.id.tv_currentTime);
 
         Intent intent = getIntent();
-        tv_currentTime.setText("현재시각 " + intent.getStringExtra("setTime")); //시간 설정
+        String currentTime = "현재시각 " + intent.getStringExtra("setTime");
+        tv_currentTime.setText(currentTime); //시간 설정
         if (intent.getStringExtra("alarmType").equals("alarm")) {
             //순수 알람
             tv_alarmName.setText(intent.getStringExtra("alarmName"));
             btn_startClass.setVisibility(View.GONE);
         } else if (intent.getStringExtra("alarmType").equals("class")) {
-            //줌 시작
-            tv_alarmName.setText("지금은 " + intent.getStringExtra("alarmName") + "시간입니다");
+            //수업듣기
+            String currentClass = "지금은 " + intent.getStringExtra("alarmName") + "시간입니다";
+            tv_alarmName.setText(currentClass);
+            btn_startClass.setVisibility(View.VISIBLE);
         }
 
         btn_startClass.setOnClickListener(new View.OnClickListener() {

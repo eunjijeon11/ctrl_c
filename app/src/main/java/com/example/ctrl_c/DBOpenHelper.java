@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.ContactsContract;
 import android.widget.Switch;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import androidx.annotation.Nullable;
 
 public class DBOpenHelper {
@@ -66,7 +69,7 @@ public class DBOpenHelper {
     private static class TimetableDBHelper extends SQLiteOpenHelper {
 
         private static final String DB_NAME = "TimetableDataBase.db";
-        private static final int DB_Version = 7;
+        private static final int DB_Version = 8;
 
         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -156,16 +159,16 @@ public class DBOpenHelper {
         return sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;
     }
 
-    public boolean insertClasses(String[] classes, rowData mData) {
+    public boolean insertClasses(ArrayList<SubjectData> classes, rowData mData) {
         ContentValues values = new ContentValues();
 
-        values.put(DataBases.CreateTimetableDB.MON, classes[0]);
-        values.put(DataBases.CreateTimetableDB.TUE, classes[1]);
-        values.put(DataBases.CreateTimetableDB.WED, classes[2]);
-        values.put(DataBases.CreateTimetableDB.THU, classes[3]);
-        values.put(DataBases.CreateTimetableDB.FRI, classes[4]);
-        values.put(DataBases.CreateTimetableDB.SAT, classes[5]);
-        values.put(DataBases.CreateTimetableDB.SUN, classes[6]);
+        values.put(DataBases.CreateTimetableDB.MON, classes.get(0).getSubject());
+        values.put(DataBases.CreateTimetableDB.TUE, classes.get(1).getSubject());
+        values.put(DataBases.CreateTimetableDB.WED, classes.get(2).getSubject());
+        values.put(DataBases.CreateTimetableDB.THU, classes.get(3).getSubject());
+        values.put(DataBases.CreateTimetableDB.FRI, classes.get(4).getSubject());
+        values.put(DataBases.CreateTimetableDB.SAT, classes.get(5).getSubject());
+        values.put(DataBases.CreateTimetableDB.SUN, classes.get(6).getSubject());
         values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());
         values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());
         values.put(DataBases.CreateTimetableDB.USE_ALARM, mData.getUseAlarm() ? 1 : 0);
