@@ -66,13 +66,13 @@ public class alarmUtil {
             Log.e("selected time", selectTime + "");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Log.e("alarm", requestCode + "set");
+                Log.e("alarm", requestCode + "set1");
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Log.e("alarm", requestCode + "set");
+                Log.e("alarm", requestCode + "set2");
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
             } else {
-                Log.e("alarm", requestCode + "set");
+                Log.e("alarm", requestCode + "set3");
                 alarmManager.set(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
             }
         }

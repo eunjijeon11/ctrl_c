@@ -205,6 +205,7 @@ public class timetable_setting extends AppCompatActivity {
 
         });
 
+        dbOpenHelper = new DBOpenHelper(this);
         readDB(); //과목 정보 불러오기&시간표 정보 불러오기
 
         //과목 버튼 기능
@@ -230,13 +231,11 @@ public class timetable_setting extends AppCompatActivity {
         cv_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbOpenHelper.open(TIMETABLE);
                 dbOpenHelper.deleteAllColumns(TIMETABLE); //모두 삭제
                 deleteAllAlarm(rowList); //알람 모두 삭제
                 rowList = new ArrayList<>();
                 for (int row = 0;row<ra_timetable_row.getItemCount();row++) {
                     rowData mData = ra_timetable_row.items.get(row); //교시 정보 얻기
-                    Log.e("useAlarm", String.valueOf(mData.getUseAlarm()));
                     ArrayList<SubjectData> classes = new ArrayList<>();
                     for (int i=0;i<7;i++) {
                         SubjectData tempData = ra_timetable.items.get(row * 7 + i);
@@ -253,7 +252,6 @@ public class timetable_setting extends AppCompatActivity {
                     //데이터 쓰기
                     dbOpenHelper.insertClasses(classes, mData);
                 }
-                dbOpenHelper.close(TIMETABLE);
 
                 Toast.makeText(timetable_setting.this, "저장되었습니다", Toast.LENGTH_SHORT).show();
             }
@@ -303,10 +301,9 @@ public class timetable_setting extends AppCompatActivity {
     }
 
     void readDB() {
-        dbOpenHelper = new DBOpenHelper(this);
-
         //과목 목록 불러오기
         dbOpenHelper.open(SUBJECT);
+        dbOpenHelper.open(TIMETABLE);
         Cursor cursor = dbOpenHelper.selectColumns(SUBJECT);
         while(cursor.moveToNext()) {
             String tempSubject = cursor.getString(cursor.getColumnIndex("subjectName"));
@@ -333,10 +330,8 @@ public class timetable_setting extends AppCompatActivity {
             chipGroup.addView(chip);
         }
         cursor.close();
-        dbOpenHelper.close(SUBJECT);
 
         //시간표 불러오기
-        dbOpenHelper.open(TIMETABLE);
         int row = 0;
         rowList = new ArrayList<>();
         Cursor tCursor = dbOpenHelper.selectColumns(TIMETABLE);
@@ -372,7 +367,6 @@ public class timetable_setting extends AppCompatActivity {
             row++;
         }
         tCursor.close();
-        dbOpenHelper.close(TIMETABLE);
     }
 
     void deleteAllAlarm(ArrayList<Integer> rowList) {
@@ -390,9 +384,9 @@ public class timetable_setting extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        ra_timetable.notifyDataSetChanged();
-        ra_timetable_row.notifyDataSetChanged();
+    protected void onDestroy() {
+        dbOpenHelper.close(SUBJECT);
+        dbOpenHelper.close(TIMETABLE);
+        super.onDestroy();
     }
 }

@@ -15,6 +15,7 @@ import java.util.Locale;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.e("alarm receiver", "triggered");
         String type = intent.getStringExtra("type");
         int requestCode = intent.getIntExtra("requestCode", 0);
         int startH = intent.getIntExtra("hour", 0);
@@ -38,7 +39,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             case 7: //토요일
                 dayOfWeek = 5;
             default:
-                dayOfWeek = 0;
+                dayOfWeek = -1;
         }
 
         if (type.equals("class")) { //수업 알람
@@ -51,6 +52,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 mIntent.putExtra("alarmID", classes.get(dayOfWeek).getID());
                 mIntent.putExtra("alarmPW", classes.get(dayOfWeek).getPW());
                 mIntent.putExtra("setTime", intent.getLongExtra("time", 0));
+                context.startActivity(mIntent);
             }
         } else if (type.equals("alarm")) {
             //일반 알람
