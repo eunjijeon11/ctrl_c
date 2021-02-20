@@ -68,7 +68,7 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
         }
 
         public void onBind(rowData rowdata) {
-            tv_row.setText(String.valueOf(rowdata.getRow()));
+            tv_row.setText(String.valueOf(getAdapterPosition() + 1));
         }
     }
 }

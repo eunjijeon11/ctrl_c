@@ -2,19 +2,11 @@ package com.example.ctrl_c;
 
 //클라스 변수 선언
 public class rowData {
-    private int row;
+    //private int row;
     private int startH;
     private int startM;
     private int alarmBefore;
     private boolean useAlarm;
-
-    public int getRow() {
-        return row;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
 
     public int getStartH() {
         return startH;

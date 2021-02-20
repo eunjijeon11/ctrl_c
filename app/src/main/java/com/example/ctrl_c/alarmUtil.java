@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -26,55 +27,43 @@ public class alarmUtil {
         alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
     }
 
-    public void setClasses(ArrayList<SubjectData> classes){
-        this.classes = classes;
-    }
+    public void setAlarm(int requestCode, int hour, int min, boolean useAlarm, ArrayList<SubjectData> classes) {
+        if (min < 0) {
+            hour -= 1;
+            min += 60;
+            if (hour < 0) {
+                hour += 24;
+            }
+        }
 
-    public void setAlarm(int requestCode, int hour, int min, boolean useAlarm) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        long selectTime = calendar.getTimeInMillis();
+        long currentTime = System.currentTimeMillis();
+
+        if (selectTime <= currentTime) {
+            calendar.add(Calendar.DATE, 1);
+            selectTime = calendar.getTimeInMillis();
+        }
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("type", type);
+        if (type.equals("class")) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("classes", classes);
+            intent.putExtra("bundle", bundle);
+        }
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         if (useAlarm) {
-            if (min < 0) {
-                hour -= 1;
-                min += 60;
-                if (hour < 0) {
-                    hour += 24;
-                }
-            }
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, min);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            long selectTime = calendar.getTimeInMillis();
-            long currentTime = System.currentTimeMillis();
-            Log.e("current time", currentTime + "");
-
-            if (selectTime <= currentTime) {
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-                selectTime = calendar.getTimeInMillis();
-            }
-
-            Intent intent = new Intent(context, AlarmReceiver.class);
-            intent.putExtra("type", type);
-            intent.putExtra("hour", hour);
-            intent.putExtra("min", min);
-            if (type.equals("class")) {
-                intent.putExtra("classes", classes);
-            }
-            PendingIntent pIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            Log.e("selected time", selectTime + "");
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Log.e("alarm", requestCode + "set1");
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Log.e("alarm", requestCode + "set2");
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
-            } else {
-                Log.e("alarm", requestCode + "set3");
-                alarmManager.set(AlarmManager.RTC_WAKEUP, selectTime, pIntent);
-            }
+            alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, selectTime, AlarmManager.INTERVAL_DAY, pIntent);
+            Log.e("alarm", "set");
+        } else {
+            alarmManager.cancel(pIntent);
         }
     }
 

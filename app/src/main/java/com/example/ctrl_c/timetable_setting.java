@@ -269,7 +269,6 @@ public class timetable_setting extends AppCompatActivity {
         btn_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                temp.setRow(ra_timetable_row.getItemCount() + 1);
                 temp.setStartTime(np_Hour.getValue(), np_Min.getValue());
                 temp.setUseAlarm(sw_useAlarm.isChecked());
                 temp.setAlarmBefore(np_alarmBefore.getValue());
@@ -343,7 +342,6 @@ public class timetable_setting extends AppCompatActivity {
             //rowData 설정
             rowData tempData = new rowData();
             tempData.setStartTime(tCursor.getInt(tCursor.getColumnIndex("hour")), tCursor.getInt(tCursor.getColumnIndex("min")));
-            tempData.setRow(row + 1);
             tempData.setUseAlarm(tCursor.getInt(tCursor.getColumnIndex("useAlarm")) == 1);
             tempData.setAlarmBefore(tCursor.getInt(tCursor.getColumnIndex("alarmBefore")));
             ra_timetable_row.items.add(tempData); //row 추가
