@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    android:id="@+id/cv_show"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="30dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_show_time"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="2:30"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_show_subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수학"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/tv_show_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID: 1023049586"/>
+
+            <TextView
+                android:id="@+id/tv_show_pw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PW: 1688"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_show_copy"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="copy subject info"
+            android:src="@drawable/copy"
+            android:layout_gravity="center_vertical"
+            android:background="00000000"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
