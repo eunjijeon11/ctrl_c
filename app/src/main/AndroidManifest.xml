@@ -24,6 +24,9 @@
         <activity android:name=".subject_setting" />
         <activity android:name=".timetable_setting" />
         <activity android:name=".alarm_setting" />
+
+        <receiver android:name=".AlarmReceiver">
+        </receiver>
     </application>
 
 </manifest>

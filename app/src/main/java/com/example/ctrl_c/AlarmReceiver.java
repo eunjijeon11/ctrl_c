@@ -48,8 +48,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         if (type.equals("class")) { //수업 알람
-            ArrayList<SubjectData> classes = (ArrayList<SubjectData>)intent.getSerializableExtra("classes");
-            assert classes != null;
+            ArrayList<SubjectData> classes = new ArrayList<>();
+            Bundle bundle = intent.getBundleExtra("bundle");
+            classes = (ArrayList<SubjectData>) bundle.getSerializable("classes");
             if (!classes.get(dayOfWeek).getSubject().equals("none")) { //수업이 있으면
                 Intent mIntent = new Intent(context, AlarmActivity.class);
                 mIntent.putExtra("alarmType", "class");
@@ -62,9 +63,5 @@ public class AlarmReceiver extends BroadcastReceiver {
         } else if (type.equals("alarm")) {
             //일반 알람
         }
-
-        //내일로 다시설정
-        alarmUtil myAlarmUtil = new alarmUtil(context, type);
-        myAlarmUtil.setAlarm(requestCode, startH, startM, true);
     }
 }

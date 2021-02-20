@@ -18,8 +18,6 @@ public class alarmUtil {
 
     String type;
 
-    ArrayList<SubjectData> classes;
-
     public alarmUtil(Context context, String type) {
         this.type = type;
         this.context = context;
@@ -70,7 +68,7 @@ public class alarmUtil {
     public void cancelAlarm(int requestCode) {
         Log.e("alarm", requestCode + "deleted");
         Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pIntent);
     }
 }
