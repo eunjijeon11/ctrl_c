@@ -67,6 +67,13 @@ public class frag_alarm extends Fragment {
 
                 dbOpenHelper.deleteColumn(arrayIndex.get(position), "alarm");
             }
+
+            @Override
+            public void onCheckSwitch(int position, boolean isChecked) {
+                AlarmData alarmData = a_Rvadapter.items.get(position);
+                alarmData.setOnOff(isChecked);
+                dbOpenHelper.updateAlarm(arrayIndex.get(position), alarmData);
+            }
         });
 
 

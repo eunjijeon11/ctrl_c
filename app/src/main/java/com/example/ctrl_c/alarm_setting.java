@@ -45,9 +45,9 @@ public class alarm_setting extends AppCompatActivity {
 
         if (type.equals("change")) {
             id = intent.getLongExtra("alarm id", 0);
-            String alarmName = intent.getStringExtra("alarm name");
-            int alarmHour = intent.getIntExtra("alarm hour", 0);
-            int alarmMin = intent.getIntExtra("alarm min", 0);
+            String alarmName = intent.getStringExtra("alarm Name");
+            int alarmHour = intent.getIntExtra("alarm Hour", 0);
+            int alarmMin = intent.getIntExtra("alarm Min", 0);
 
             editText.setText(alarmName);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class alarm_RecyclerViewAdapter extends RecyclerView.Adapter<alarm_Recycl
     public interface OnItemClickListener {
         void onChangeClick(int position);
         void onDeleteClick(int position);
+        void onCheckSwitch(int position, boolean isChecked);
     }
 
     public void setOnItemClickListener(alarm_RecyclerViewAdapter.OnItemClickListener listener) {
@@ -80,6 +82,18 @@ public class alarm_RecyclerViewAdapter extends RecyclerView.Adapter<alarm_Recycl
                         }
                     }
 
+                }
+            });
+
+            Sc_alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onCheckSwitch(position, isChecked);
+                        }
+                    }
                 }
             });
 
