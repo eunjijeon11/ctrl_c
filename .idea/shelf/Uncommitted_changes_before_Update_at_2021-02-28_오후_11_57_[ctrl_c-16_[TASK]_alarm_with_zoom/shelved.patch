@@ -1,0 +1,229 @@
+Index: app/src/main/java/com/example/ctrl_c/DBOpenHelper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.ctrl_c;\r\n\r\nimport android.content.ContentValues;\r\nimport android.content.Context;\r\nimport android.database.Cursor;\r\nimport android.database.SQLException;\r\nimport android.database.sqlite.SQLiteDatabase;\r\nimport android.database.sqlite.SQLiteOpenHelper;\r\nimport android.provider.ContactsContract;\r\nimport android.widget.Switch;\r\n\r\nimport androidx.annotation.Nullable;\r\n\r\npublic class DBOpenHelper {\r\n\r\n    private final Context mContext;\r\n    private AlarmDBHelper alarmDBHelper;\r\n    private SubjectDBHelper subjectDBHelper;\r\n    private TimetableDBHelper timetableDBHelper;\r\n    private static SQLiteDatabase aDB;\r\n    private static SQLiteDatabase sDB;\r\n    private static SQLiteDatabase tDB;\r\n\r\n    private static class AlarmDBHelper extends SQLiteOpenHelper {\r\n\r\n        private static final String DB_NAME = \"AlarmDataBase.db\";\r\n        private static final int DB_Version = 4;\r\n\r\n        public AlarmDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {\r\n            super(context, name, factory, version);\r\n        }\r\n\r\n        @Override\r\n        public void onCreate(SQLiteDatabase db) {\r\n            db.execSQL(DataBases.CreateAlarmDB.CREATE);\r\n        }\r\n\r\n        @Override\r\n        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {\r\n            db.execSQL(\"DROP TABLE IF EXISTS \" + DataBases.CreateAlarmDB.TABLE_NAME);\r\n            onCreate(db);\r\n        }\r\n    }\r\n\r\n    private static class SubjectDBHelper extends SQLiteOpenHelper {\r\n\r\n        private static final String DB_NAME = \"SubjectDataBase.db\";\r\n        private static final int DB_Version = 5;\r\n\r\n        public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {\r\n            super(context, name, factory, version);\r\n        }\r\n\r\n        @Override\r\n        public void onCreate(SQLiteDatabase db) {\r\n            db.execSQL(DataBases.CreateSubjectDB.CREATE);\r\n        }\r\n\r\n        @Override\r\n        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {\r\n            db.execSQL(\"DROP TABLE IF EXISTS \" + DataBases.CreateSubjectDB.TABLE_NAME);\r\n            onCreate(db);\r\n        }\r\n    }\r\n\r\n    private static class TimetableDBHelper extends SQLiteOpenHelper {\r\n\r\n        private static final String DB_NAME = \"TimetableDataBase.db\";\r\n        private static final int DB_Version = 6;\r\n\r\n        public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {\r\n            super(context, name, factory, version);\r\n        }\r\n\r\n        @Override\r\n        public void onCreate(SQLiteDatabase db) {\r\n            db.execSQL(DataBases.CreateTimetableDB.CREATE);\r\n        }\r\n\r\n        @Override\r\n        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {\r\n            db.execSQL(\"DROP TABLE IF EXISTS \" + DataBases.CreateTimetableDB.TABLE_NAME);\r\n        }\r\n    }\r\n\r\n    public DBOpenHelper(Context context) {\r\n        this.mContext = context;\r\n    }\r\n\r\n    public DBOpenHelper open(String DBName) throws SQLException {\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                alarmDBHelper = new AlarmDBHelper(mContext, AlarmDBHelper.DB_NAME, null, AlarmDBHelper.DB_Version);\r\n                aDB = alarmDBHelper.getWritableDatabase();\r\n                break;\r\n            case \"subject\":\r\n                subjectDBHelper = new SubjectDBHelper(mContext, SubjectDBHelper.DB_NAME, null, SubjectDBHelper.DB_Version);\r\n                sDB = subjectDBHelper.getWritableDatabase();\r\n                break;\r\n            case \"timetable\":\r\n                timetableDBHelper = new TimetableDBHelper(mContext, TimetableDBHelper.DB_NAME, null, TimetableDBHelper.DB_Version);\r\n                tDB = timetableDBHelper.getWritableDatabase();\r\n                break;\r\n        }\r\n        return this;\r\n    }\r\n\r\n    public void create(String DBName) {\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                alarmDBHelper.onCreate(aDB);\r\n                break;\r\n            case \"subject\":\r\n                subjectDBHelper.onCreate(sDB);\r\n                break;\r\n            case \"timetable\":\r\n                timetableDBHelper.onCreate(tDB);\r\n                break;\r\n        }\r\n    }\r\n\r\n    public void close(String DBName) {\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                aDB.close();\r\n                break;\r\n            case \"subject\":\r\n                sDB.close();\r\n                break;\r\n            case \"timetable\":\r\n                tDB.close();\r\n                break;\r\n        }\r\n    }\r\n\r\n    //insert\r\n    public boolean insertAlarm(AlarmData alarmData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());\r\n        values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());\r\n        values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());\r\n        values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);\r\n\r\n        return aDB.insert(DataBases.CreateAlarmDB.TABLE_NAME, null, values) > 0;\r\n    }\r\n\r\n    public boolean insertSubject(SubjectData subjectData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, subjectData.getSubject());\r\n        values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());\r\n        values.put(DataBases.CreateSubjectDB.PASSWORD, subjectData.getPW());\r\n        values.put(DataBases.CreateSubjectDB.COLOR, subjectData.getColor());\r\n        int useAlarm = subjectData.getUseAlarm() ? 1 : 0;\r\n        values.put(DataBases.CreateSubjectDB.USE_ALARM, useAlarm);\r\n        values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());\r\n\r\n        return sDB.insert(DataBases.CreateSubjectDB.TABLE_NAME, null, values) > 0;\r\n    }\r\n\r\n    public boolean insertClasses(String[] classes, rowData mData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateTimetableDB.MON, classes[0]);\r\n        values.put(DataBases.CreateTimetableDB.TUE, classes[1]);\r\n        values.put(DataBases.CreateTimetableDB.WED, classes[2]);\r\n        values.put(DataBases.CreateTimetableDB.THU, classes[3]);\r\n        values.put(DataBases.CreateTimetableDB.FRI, classes[4]);\r\n        values.put(DataBases.CreateTimetableDB.SAT, classes[5]);\r\n        values.put(DataBases.CreateTimetableDB.SUN, classes[6]);\r\n        values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());\r\n        values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());\r\n\r\n        return tDB.insert(DataBases.CreateTimetableDB.TABLE_NAME, null, values) > 0;\r\n    }\r\n\r\n    //update\r\n    public boolean updateAlarm(long id, AlarmData alarmData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateAlarmDB.ALARM_NAME, alarmData.getAlarmName());\r\n        values.put(DataBases.CreateAlarmDB.HOUR, alarmData.getHour());\r\n        values.put(DataBases.CreateAlarmDB.MIN, alarmData.getMin());\r\n        values.put(DataBases.CreateAlarmDB.ON_OFF, alarmData.getOnOff() ? 1 : 0);\r\n\r\n        return aDB.update(DataBases.CreateAlarmDB.TABLE_NAME, values, \"_id=\" + id, null) > 0;\r\n    }\r\n\r\n    public boolean updateSubject(long id, SubjectData subjectData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateSubjectDB.SUBJECT_NAME, subjectData.getSubject());\r\n        values.put(DataBases.CreateSubjectDB.ID, subjectData.getID());\r\n        values.put(DataBases.CreateSubjectDB.PASSWORD, subjectData.getPW());\r\n        values.put(DataBases.CreateSubjectDB.COLOR, subjectData.getColor());\r\n        values.put(DataBases.CreateSubjectDB.ALARM_BEFORE, subjectData.getAlarmBefore());\r\n\r\n        return sDB.update(DataBases.CreateSubjectDB.TABLE_NAME, values, \"_id=\" + id, null) > 0;\r\n    }\r\n\r\n    public boolean updateClasses(long id, String[] classes, rowData mData) {\r\n        ContentValues values = new ContentValues();\r\n\r\n        values.put(DataBases.CreateTimetableDB.MON, classes[0]);\r\n        values.put(DataBases.CreateTimetableDB.TUE, classes[1]);\r\n        values.put(DataBases.CreateTimetableDB.WED, classes[2]);\r\n        values.put(DataBases.CreateTimetableDB.THU, classes[3]);\r\n        values.put(DataBases.CreateTimetableDB.FRI, classes[4]);\r\n        values.put(DataBases.CreateTimetableDB.SAT, classes[5]);\r\n        values.put(DataBases.CreateTimetableDB.SUN, classes[6]);\r\n        values.put(DataBases.CreateTimetableDB.START_HOUR, mData.getStartH());\r\n        values.put(DataBases.CreateTimetableDB.START_MIN, mData.getStartM());\r\n\r\n        return tDB.update(DataBases.CreateTimetableDB.TABLE_NAME, values, \"_id=\" + id, null) > 0;\r\n    }\r\n\r\n    public boolean deleteColumn(long id, String DBName) {\r\n        boolean isDelete = false;\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                isDelete = aDB.delete(DataBases.CreateAlarmDB.TABLE_NAME, \"_id=\" + id, null) > 0;\r\n                break;\r\n            case \"subject\":\r\n                isDelete = sDB.delete(DataBases.CreateSubjectDB.TABLE_NAME, \"_id=\" + id, null) > 0;\r\n                break;\r\n            case \"timetable\":\r\n                isDelete = tDB.delete(DataBases.CreateTimetableDB.TABLE_NAME, \"_id=\" + id, null) > 0;\r\n                break;\r\n        }\r\n        return isDelete;\r\n    }\r\n\r\n    public Cursor selectColumns(String DBName) {\r\n        Cursor cursor = null;\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                cursor = aDB.query(DataBases.CreateAlarmDB.TABLE_NAME, null, null, null, null, null, null);\r\n                break;\r\n            case \"subject\":\r\n                cursor = sDB.query(DataBases.CreateSubjectDB.TABLE_NAME, null, null, null, null, null, null);\r\n                break;\r\n            case \"timetable\":\r\n                cursor = tDB.query(DataBases.CreateTimetableDB.TABLE_NAME, null, null, null, null, null, null);\r\n                break;\r\n        }\r\n        return cursor;\r\n    }\r\n\r\n    public void deleteAllColumns(String DBName) {\r\n        switch (DBName) {\r\n            case \"alarm\":\r\n                aDB.delete(DataBases.CreateAlarmDB.TABLE_NAME, null, null);\r\n                break;\r\n            case \"subject\":\r\n                sDB.delete(DataBases.CreateSubjectDB.TABLE_NAME, null, null);\r\n                break;\r\n            case \"timetable\":\r\n                tDB.delete(DataBases.CreateTimetableDB.TABLE_NAME, null, null);\r\n                break;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/ctrl_c/DBOpenHelper.java	(revision 79c36910c0c54e75194de625441145764e9e541c)
++++ app/src/main/java/com/example/ctrl_c/DBOpenHelper.java	(date 1614521822347)
+@@ -45,7 +45,7 @@
+     private static class SubjectDBHelper extends SQLiteOpenHelper {
+ 
+         private static final String DB_NAME = "SubjectDataBase.db";
+-        private static final int DB_Version = 5;
++        private static final int DB_Version = 6;
+ 
+         public SubjectDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+             super(context, name, factory, version);
+@@ -66,7 +66,7 @@
+     private static class TimetableDBHelper extends SQLiteOpenHelper {
+ 
+         private static final String DB_NAME = "TimetableDataBase.db";
+-        private static final int DB_Version = 6;
++        private static final int DB_Version = 8;
+ 
+         public TimetableDBHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+             super(context, name, factory, version);
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleMigrationSettings\" migrationVersion=\"1\" />\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"PLATFORM\" />\r\n        <option name=\"distributionType\" value=\"LOCAL\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleHome\" value=\"$USER_HOME$/.gradle/wrapper/dists/gradle-5.6.4-all/ankdp27end7byghfw1q2sw75f/gradle-5.6.4\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n        <option name=\"resolveModulePerSourceSet\" value=\"false\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/gradle.xml	(revision 79c36910c0c54e75194de625441145764e9e541c)
++++ .idea/gradle.xml	(date 1614521968607)
+@@ -15,6 +15,7 @@
+           </set>
+         </option>
+         <option name="resolveModulePerSourceSet" value="false" />
++        <option name="useQualifiedModuleNames" value="true" />
+       </GradleProjectSettings>
+     </option>
+   </component>
+Index: app/src/main/java/com/example/ctrl_c/frag_alarm.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.ctrl_c;\r\n\r\nimport android.content.Intent;\r\nimport android.database.Cursor;\r\nimport android.os.Bundle;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ArrayAdapter;\r\nimport android.widget.Button;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport java.util.ArrayList;\r\n\r\npublic class frag_alarm extends Fragment {\r\n\r\n    View view;\r\n    RecyclerView alarmRecyclerView;\r\n    alarm_RecyclerViewAdapter a_Rvadapter;\r\n    Button btn_add;\r\n    DBOpenHelper dbOpenHelper;\r\n    ArrayList<Long> arrayIndex = new ArrayList<>();\r\n\r\n    @Nullable\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n        view = inflater.inflate(R.layout.fragment_alarm, container, false);\r\n\r\n        alarmRecyclerView = view.findViewById(R.id.rv);\r\n        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());\r\n        alarmRecyclerView.setLayoutManager(linearLayoutManager);\r\n        a_Rvadapter = new alarm_RecyclerViewAdapter();\r\n        alarmRecyclerView.setAdapter(a_Rvadapter);\r\n\r\n        btn_add = view.findViewById(R.id.btn_add);\r\n        btn_add.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(getActivity(),alarm_setting.class);\r\n                intent.putExtra(\"Change type\", \"add\");\r\n                startActivityForResult(intent,1000);\r\n            }\r\n        });\r\n\r\n        a_Rvadapter.setOnItemClickListener(new alarm_RecyclerViewAdapter.OnItemClickListener() {\r\n\r\n            @Override\r\n            public void onChangeClick(int position) {\r\n                Intent intent = new Intent(getActivity(),alarm_setting.class);\r\n                intent.putExtra(\"Change type\", \"change\");\r\n                intent.putExtra(\"alarm id\", arrayIndex.get(position));\r\n                intent.putExtra(\"alarm Name\", a_Rvadapter.items.get(position).getAlarmName());\r\n                intent.putExtra(\"alarm Hour\", a_Rvadapter.items.get(position).getHour());\r\n                intent.putExtra(\"alarm Min\", a_Rvadapter.items.get(position).getMin());\r\n                startActivityForResult(intent,1000);\r\n            }\r\n\r\n            @Override\r\n            public void onDeleteClick(int position) {\r\n                a_Rvadapter.items.remove(position);\r\n                a_Rvadapter.notifyDataSetChanged();\r\n            }\r\n        });\r\n\r\n\r\n        dbOpenHelper = new DBOpenHelper(getActivity());\r\n        dbOpenHelper.open(\"alarm\");\r\n\r\n        Cursor cursor = dbOpenHelper.selectColumns(\"alarm\");\r\n        while (cursor.moveToNext()) {\r\n            long tempIndex = cursor.getLong(cursor.getColumnIndex(\"_id\"));\r\n            String tempAlarmName = cursor.getString(cursor.getColumnIndex(\"alarm name\"));\r\n            int tempHour = cursor.getInt(cursor.getColumnIndex(\"alarm hour\"));\r\n            int tempMin = cursor.getInt(cursor.getColumnIndex(\"alarm min\"));\r\n            boolean tempOnOff = (cursor.getInt(cursor.getColumnIndex(\"onOff\")) == 1); //숫자인 onOff를 boolean으로 만들기\r\n\r\n            //...가져온 데이터를 이용하기(리사이클러뷰에 추가하기 등등)...\r\n            AlarmData tempData = new AlarmData();\r\n            tempData.setAlarmName(tempAlarmName);\r\n            tempData.setHour(tempHour);\r\n            tempData.setMin(tempMin);\r\n            tempData.setOnOff(tempOnOff);\r\n            a_Rvadapter.addItem(tempData);\r\n\r\n            //id 저장하기\r\n            arrayIndex.add(tempIndex);\r\n        }\r\n        cursor.close();\r\n\r\n\r\n        return view;\r\n\r\n    }\r\n\r\n    @Override\r\n    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {\r\n        if (requestCode == 1000) {\r\n            if (resultCode == 2000) { //request code와 result code 확인\r\n                if (data.getStringExtra(\"alarmChangeType\").equals(\"add\")) {\r\n                    AlarmData tempData = new AlarmData();\r\n                    tempData.setAlarmName(data.getStringExtra(\"alarm name\"));\r\n                    tempData.setHour(data.getIntExtra(\"alarm hour\", 0));\r\n                    tempData.setMin(data.getIntExtra(\"alarm min\", 0));\r\n                    tempData.setOnOff(true);\r\n                    a_Rvadapter.addItem(tempData);\r\n                    a_Rvadapter.notifyDataSetChanged();\r\n                } else if (data.getStringExtra(\"alarmChangeType\").equals(\"change\")) {\r\n                    AlarmData tempData = new AlarmData();\r\n                    tempData.setAlarmName(data.getStringExtra(\"alarm name\"));\r\n                    tempData.setHour(data.getIntExtra(\"alarm hour\", 0));\r\n                    tempData.setMin(data.getIntExtra(\"alarm min\", 0));\r\n                    tempData.setOnOff(true);\r\n                    a_Rvadapter.items.add(arrayIndex.indexOf(data.getIntExtra(\"alarm position\", 0)), tempData);\r\n                    a_Rvadapter.notifyDataSetChanged();\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/ctrl_c/frag_alarm.java	(revision 79c36910c0c54e75194de625441145764e9e541c)
++++ app/src/main/java/com/example/ctrl_c/frag_alarm.java	(date 1614523749505)
+@@ -64,6 +64,8 @@
+             public void onDeleteClick(int position) {
+                 a_Rvadapter.items.remove(position);
+                 a_Rvadapter.notifyDataSetChanged();
++
++                dbOpenHelper.deleteColumn(arrayIndex.get(position), "alarm");
+             }
+         });
+ 
+@@ -74,9 +76,9 @@
+         Cursor cursor = dbOpenHelper.selectColumns("alarm");
+         while (cursor.moveToNext()) {
+             long tempIndex = cursor.getLong(cursor.getColumnIndex("_id"));
+-            String tempAlarmName = cursor.getString(cursor.getColumnIndex("alarm name"));
+-            int tempHour = cursor.getInt(cursor.getColumnIndex("alarm hour"));
+-            int tempMin = cursor.getInt(cursor.getColumnIndex("alarm min"));
++            String tempAlarmName = cursor.getString(cursor.getColumnIndex("alarmName"));
++            int tempHour = cursor.getInt(cursor.getColumnIndex("hour"));
++            int tempMin = cursor.getInt(cursor.getColumnIndex("min"));
+             boolean tempOnOff = (cursor.getInt(cursor.getColumnIndex("onOff")) == 1); //숫자인 onOff를 boolean으로 만들기
+ 
+             //...가져온 데이터를 이용하기(리사이클러뷰에 추가하기 등등)...
+@@ -122,5 +124,9 @@
+         }
+     }
+ 
+-
++    @Override
++    public void onPause() {
++        dbOpenHelper.close("alarm");
++        super.onPause();
++    }
+ }
+Index: app/src/main/java/com/example/ctrl_c/alarm_setting.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.ctrl_c;\r\n\r\n\r\nimport android.content.Intent;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.TimePicker;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\n\r\n\r\n\r\npublic class alarm_setting extends AppCompatActivity {\r\n\r\n    TimePicker timePicker;\r\n\r\n    Button btn_save;\r\n\r\n    EditText editText;\r\n\r\n    Intent intent;\r\n\r\n    DBOpenHelper dbOpenHelper;\r\n\r\n    long id;\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_alarm_setting);\r\n\r\n        timePicker = findViewById(R.id.timepicker);\r\n        btn_save = findViewById(R.id.btn_save);\r\n        editText = findViewById(R.id.ctrlc_alarm);\r\n\r\n        intent = getIntent();\r\n\r\n        final Intent intent = getIntent();\r\n\r\n        final String type = intent.getStringExtra(\"Change type\");\r\n\r\n        if (type.equals(\"change\")) {\r\n            id = intent.getLongExtra(\"alarm id\", 0);\r\n            String alarmName = intent.getStringExtra(\"alarm name\");\r\n            int alarmHour = intent.getIntExtra(\"alarm hour\", 0);\r\n            int alarmMin = intent.getIntExtra(\"alarm min\", 0);\r\n\r\n            editText.setText(alarmName);\r\n            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {\r\n                timePicker.setHour(alarmHour);\r\n                timePicker.setMinute(alarmMin);\r\n            } else {\r\n                timePicker.setCurrentHour(alarmHour);\r\n                timePicker.setCurrentMinute(alarmMin);\r\n            }\r\n\r\n            btn_save.setOnClickListener(new View.OnClickListener() {\r\n                @Override\r\n                public void onClick(View v) {\r\n                    int hour = 0;\r\n                    int minute = 0;\r\n\r\n                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {\r\n                        hour = timePicker.getHour();\r\n                        minute = timePicker.getMinute();\r\n                    } else {\r\n                        hour = timePicker.getCurrentHour();\r\n                        minute = timePicker.getCurrentMinute();\r\n                    }\r\n\r\n                    String alarmname = editText.getText().toString();\r\n                    dbOpenHelper.open(\"alarm\");\r\n                    if (type.equals(\"add\")) {\r\n                        AlarmData alarmData = new AlarmData();\r\n                        alarmData.setAlarmName(alarmname);\r\n                        alarmData.setHour(hour);\r\n                        alarmData.setMin(minute);\r\n                        alarmData.setOnOff(true);\r\n\r\n                        //추가\r\n                        dbOpenHelper.insertAlarm(alarmData);\r\n                    }\r\n                    else {\r\n                        //수정\r\n                        AlarmData alarmData = new AlarmData();\r\n                        alarmData.setAlarmName(alarmname);\r\n                        alarmData.setHour(hour);\r\n                        alarmData.setMin(minute);\r\n                        alarmData.setOnOff(true);\r\n\r\n                        dbOpenHelper.updateAlarm(id, alarmData);\r\n                    }\r\n\r\n                    intent.putExtra(\"alarmChangeType\", type);\r\n                    intent.putExtra(\"alarm name\", alarmname);\r\n                    intent.putExtra(\"alarm hour\", hour);\r\n                    intent.putExtra(\"alarm min\", minute);\r\n                    setResult(2000, intent);\r\n                    finish();\r\n\r\n                }\r\n            });\r\n        }\r\n    }\r\n\r\n    @Override\r\n    protected void onPause() {\r\n        dbOpenHelper.close(\"alarm\");\r\n        super.onPause();\r\n    }\r\n    @Override\r\n    protected void onResume() {\r\n        dbOpenHelper.open(\"alarm\");\r\n        super.onResume();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/ctrl_c/alarm_setting.java	(revision 79c36910c0c54e75194de625441145764e9e541c)
++++ app/src/main/java/com/example/ctrl_c/alarm_setting.java	(date 1614523172463)
+@@ -4,6 +4,7 @@
+ import android.content.Intent;
+ import android.os.Build;
+ import android.os.Bundle;
++import android.util.Log;
+ import android.view.View;
+ import android.widget.Button;
+ import android.widget.EditText;
+@@ -33,8 +34,9 @@
+         setContentView(R.layout.activity_alarm_setting);
+ 
+         timePicker = findViewById(R.id.timepicker);
+-        btn_save = findViewById(R.id.btn_save);
++        btn_save = findViewById(R.id.btn_alarm_save);
+         editText = findViewById(R.id.ctrlc_alarm);
++        dbOpenHelper = new DBOpenHelper(this);
+ 
+         intent = getIntent();
+ 
+@@ -56,54 +58,55 @@
+                 timePicker.setCurrentHour(alarmHour);
+                 timePicker.setCurrentMinute(alarmMin);
+             }
++        }
+ 
+-            btn_save.setOnClickListener(new View.OnClickListener() {
+-                @Override
+-                public void onClick(View v) {
+-                    int hour = 0;
+-                    int minute = 0;
++        btn_save.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                Log.e("alarm add", "triggered");
++                int hour;
++                int minute;
+ 
+-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+-                        hour = timePicker.getHour();
+-                        minute = timePicker.getMinute();
+-                    } else {
+-                        hour = timePicker.getCurrentHour();
+-                        minute = timePicker.getCurrentMinute();
+-                    }
++                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
++                    hour = timePicker.getHour();
++                    minute = timePicker.getMinute();
++                } else {
++                    hour = timePicker.getCurrentHour();
++                    minute = timePicker.getCurrentMinute();
++                }
+ 
+-                    String alarmname = editText.getText().toString();
+-                    dbOpenHelper.open("alarm");
+-                    if (type.equals("add")) {
+-                        AlarmData alarmData = new AlarmData();
+-                        alarmData.setAlarmName(alarmname);
+-                        alarmData.setHour(hour);
+-                        alarmData.setMin(minute);
+-                        alarmData.setOnOff(true);
++                String alarmname = editText.getText().toString();
++                dbOpenHelper.open("alarm");
++                if (type.equals("add")) {
++                    AlarmData alarmData = new AlarmData();
++                    alarmData.setAlarmName(alarmname);
++                    alarmData.setHour(hour);
++                    alarmData.setMin(minute);
++                    alarmData.setOnOff(true);
+ 
+-                        //추가
+-                        dbOpenHelper.insertAlarm(alarmData);
+-                    }
+-                    else {
+-                        //수정
+-                        AlarmData alarmData = new AlarmData();
+-                        alarmData.setAlarmName(alarmname);
+-                        alarmData.setHour(hour);
+-                        alarmData.setMin(minute);
+-                        alarmData.setOnOff(true);
++                    //추가
++                    dbOpenHelper.insertAlarm(alarmData);
++                }
++                else {
++                    //수정
++                    AlarmData alarmData = new AlarmData();
++                    alarmData.setAlarmName(alarmname);
++                    alarmData.setHour(hour);
++                    alarmData.setMin(minute);
++                    alarmData.setOnOff(true);
+ 
+-                        dbOpenHelper.updateAlarm(id, alarmData);
+-                    }
++                    dbOpenHelper.updateAlarm(id, alarmData);
++                }
+ 
+-                    intent.putExtra("alarmChangeType", type);
+-                    intent.putExtra("alarm name", alarmname);
+-                    intent.putExtra("alarm hour", hour);
+-                    intent.putExtra("alarm min", minute);
+-                    setResult(2000, intent);
+-                    finish();
++                intent.putExtra("alarmChangeType", type);
++                intent.putExtra("alarm name", alarmname);
++                intent.putExtra("alarm hour", hour);
++                intent.putExtra("alarm min", minute);
++                setResult(2000, intent);
++                finish();
+ 
+-                }
+-            });
+-        }
++            }
++        });
+     }
+ 
+     @Override
+Index: app/src/main/res/layout/activity_alarm_setting.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_gravity=\"center\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:orientation=\"vertical\"\r\n    tools:context=\".MainActivity\" >\r\n\r\n    <TextView\r\n        android:layout_margin=\"10dp\"\r\n        android:textSize=\"24sp\"\r\n        android:layout_gravity=\"center\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"알람 설정\" />\r\n\r\n\r\n\r\n    <TimePicker\r\n        android:id=\"@+id/timepicker\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_gravity=\"center\"\r\n        android:timePickerMode=\"spinner\"/>\r\n\r\n\r\n    <EditText\r\n        android:hint=\"알람이름을 입력하세요.\"\r\n        android:id=\"@+id/ctrlc_alarm\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"/>\r\n\r\n\r\n\r\n    <Button\r\n        android:id=\"@+id/btn_save\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_gravity=\"center\"\r\n        android:layout_margin=\"8dp\"\r\n        android:text=\"저장\" />\r\n\r\n</LinearLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_alarm_setting.xml	(revision 79c36910c0c54e75194de625441145764e9e541c)
++++ app/src/main/res/layout/activity_alarm_setting.xml	(date 1614522586822)
+@@ -34,7 +34,7 @@
+ 
+ 
+     <Button
+-        android:id="@+id/btn_save"
++        android:id="@+id/btn_alarm_save"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_gravity="center"
