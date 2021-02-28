@@ -36,7 +36,7 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.onBind(items.get(position));
+        holder.onBind();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class timetable_row_rvAdapter extends RecyclerView.Adapter<timetable_row_
             });
         }
 
-        public void onBind(rowData rowdata) {
+        public void onBind() {
             tv_row.setText(String.valueOf(getAdapterPosition() + 1));
         }
     }

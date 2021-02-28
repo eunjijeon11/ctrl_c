@@ -50,7 +50,7 @@ public class timetable_show_rvAdapter extends RecyclerView.Adapter<timetable_sho
         CardView cv_background;
         ImageButton btn_copy;
 
-        public ViewHolder(@NonNull final View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cv_background = itemView.findViewById(R.id.cv_show);
             tv_subject = itemView.findViewById(R.id.tv_show_subject);
@@ -63,12 +63,14 @@ public class timetable_show_rvAdapter extends RecyclerView.Adapter<timetable_sho
             btn_copy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String copyText = times.get(getAdapterPosition())
-                            + items.get(getAdapterPosition()).getSubject()
+                    String copyText =
+                            "start at " + times.get(getAdapterPosition())
+                            +"\n"
+                            + "subject name: " + items.get(getAdapterPosition()).getSubject()
                             + "\n"
-                            + items.get(getAdapterPosition()).getID()
+                            + "id: " + items.get(getAdapterPosition()).getID()
                             + "\n"
-                            + items.get(getAdapterPosition()).getPW();
+                            + "pw: " + items.get(getAdapterPosition()).getPW();
                     ClipData clip = ClipData.newPlainText("subjectInfo", copyText);
                     clipboardManager.setPrimaryClip(clip);
                 }

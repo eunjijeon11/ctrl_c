@@ -2,6 +2,7 @@ package com.example.ctrl_c;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class frag_timetable extends Fragment {
         readSubjects();
 
         int day = Calendar.DAY_OF_WEEK;
+        Log.e("day", day + "");
         setClass(day);
 
         return view;
@@ -76,21 +78,30 @@ public class frag_timetable extends Fragment {
         switch (day) {
             case 1: // 일요일
                 day_of_week = "sun";
+                break;
             case 2:
                 day_of_week = "mon";
+                break;
             case 3:
                 day_of_week = "tue";
+                break;
             case 4:
                 day_of_week = "wed";
+                break;
             case 5:
                 day_of_week = "thu";
+                break;
             case 6:
                 day_of_week = "fri";
+                break;
             case 7:
                 day_of_week = "sat";
+                break;
             default:
                 day_of_week = "error";
+                break;
         }
+        Log.e("day of week", day_of_week);
 
         Cursor cursor = dbOpenHelper.selectColumns("timetable");
         while (cursor.moveToNext()) {

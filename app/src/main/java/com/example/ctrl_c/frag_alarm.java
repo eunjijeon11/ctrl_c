@@ -64,6 +64,8 @@ public class frag_alarm extends Fragment {
             public void onDeleteClick(int position) {
                 a_Rvadapter.items.remove(position);
                 a_Rvadapter.notifyDataSetChanged();
+
+                dbOpenHelper.deleteColumn(arrayIndex.get(position), "alarm");
             }
         });
 
@@ -74,9 +76,9 @@ public class frag_alarm extends Fragment {
         Cursor cursor = dbOpenHelper.selectColumns("alarm");
         while (cursor.moveToNext()) {
             long tempIndex = cursor.getLong(cursor.getColumnIndex("_id"));
-            String tempAlarmName = cursor.getString(cursor.getColumnIndex("alarm name"));
-            int tempHour = cursor.getInt(cursor.getColumnIndex("alarm hour"));
-            int tempMin = cursor.getInt(cursor.getColumnIndex("alarm min"));
+            String tempAlarmName = cursor.getString(cursor.getColumnIndex("alarmName"));
+            int tempHour = cursor.getInt(cursor.getColumnIndex("hour"));
+            int tempMin = cursor.getInt(cursor.getColumnIndex("min"));
             boolean tempOnOff = (cursor.getInt(cursor.getColumnIndex("onOff")) == 1); //숫자인 onOff를 boolean으로 만들기
 
             //...가져온 데이터를 이용하기(리사이클러뷰에 추가하기 등등)...
@@ -122,5 +124,9 @@ public class frag_alarm extends Fragment {
         }
     }
 
-
+    @Override
+    public void onPause() {
+        dbOpenHelper.close("alarm");
+        super.onPause();
+    }
 }
