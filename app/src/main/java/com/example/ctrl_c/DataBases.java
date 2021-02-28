@@ -24,16 +24,12 @@ public class DataBases {
         public static final String ID = "id";
         public static final String PASSWORD = "password";
         public static final String COLOR = "color";
-        public static final String ALARM_BEFORE = "alarm_before";
-        public static final String USE_ALARM = "useAlarm";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + SUBJECT_NAME + " text not null , "
                 + ID + " text not null , "
                 + PASSWORD + " text not null , "
-                + COLOR + " integer not null , "
-                + USE_ALARM + " integer not null , "
-                + ALARM_BEFORE + " integer not null );";
+                + COLOR + " integer not null );";
     }
 
     public static final class CreateTimetableDB implements BaseColumns {
@@ -47,6 +43,8 @@ public class DataBases {
         public static final String SUN = "sun";
         public static final String START_HOUR = "hour";
         public static final String START_MIN = "min";
+        public static final String USE_ALARM = "useAlarm";
+        public static final String ALARM_BEFORE = "alarmBefore";
         public static final String CREATE = "create table if not exists " + TABLE_NAME +
                 "(" + _ID + " integer primary key autoincrement, "
                 + MON + " text not null , "
@@ -57,6 +55,8 @@ public class DataBases {
                 + SAT + " text not null , "
                 + SUN + " text not null , "
                 + START_HOUR + " integer not null , "
-                + START_MIN + " integer not null );";
+                + START_MIN + " integer not null , "
+                + USE_ALARM + " integer not null , "
+                + ALARM_BEFORE + " integer not null );";
     }
 }

@@ -32,10 +32,8 @@ public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.Vi
         TextView tv_subject;
         TextView tv_ID;
         TextView tv_PW;
-        TextView tv_alarmBefore;
         ImageButton btn_copy, btn_delete;
-        Boolean useAlarm;
-        String ID, PW, alarmBefore;
+        String ID, PW;
         int color;
         CardView cv_background;
 
@@ -44,7 +42,6 @@ public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.Vi
             tv_subject = itemView.findViewById(R.id.tv_subject);
             tv_ID = itemView.findViewById(R.id.tv_ID);
             tv_PW = itemView.findViewById(R.id.tv_PW);
-            tv_alarmBefore = itemView.findViewById(R.id.tv_alarmBefore);
             btn_copy = itemView.findViewById(R.id.btn_copy);
             btn_delete = itemView.findViewById(R.id.btn_delete);
             cv_background = itemView.findViewById(R.id.cv_subject);
@@ -87,7 +84,6 @@ public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.Vi
         }
 
         void onbind(SubjectData subjectData) {
-            alarmBefore = subjectData.getAlarmBefore() + "분 전에 알림";
             ID = "ID: " + subjectData.getID();
             PW = "PW: " + subjectData.getPW();
             color = subjectData.getColor();
@@ -96,14 +92,6 @@ public class subject_rvAdapter extends RecyclerView.Adapter<subject_rvAdapter.Vi
             tv_subject.setText(subjectData.getSubject());
             tv_ID.setText(ID);
             tv_PW.setText(PW);
-            tv_alarmBefore.setText(alarmBefore);
-            useAlarm = subjectData.getUseAlarm();
-
-            if (!useAlarm) {
-                tv_alarmBefore.setVisibility(View.INVISIBLE);
-            } else if (useAlarm) {
-                tv_alarmBefore.setVisibility(View.VISIBLE);
-            }
         }
     }
 
